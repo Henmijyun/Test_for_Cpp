@@ -24,5 +24,7 @@ public class HelloJava
 		//单行注释；如下的语句表示输出到控制台
 		System.out.println("Hello,World!");
 		System.out.println("Hello,World!");
+		System.out.println("Hello,World!");
+		System.out.println("Hello,World!");
 	}
 } 
