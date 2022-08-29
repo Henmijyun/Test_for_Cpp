@@ -364,61 +364,228 @@
 
 
 
+//#include "Person.h"
+//
+//class Date
+//{
+//public:
+//	//void Init(int year, int month, int day)
+//	//{
+//	//	_year = year;
+//	//	_month = month;
+//	//	_day = day;
+//	//}
+//// 不用Init，改用构造函数
+//	Date(int year = 1, int month = 1, int day = 1)
+//	{
+//		_year = year;
+//		_month = month;
+//		_day = day;
+//	}
+//// 构造函数可以函数重载 ，但是 无参数 和 全缺省 不可以重复定义。
+// 
+//	//Date() 
+//	//{
+//	//	_year = 1;
+//	//	_month = 1;
+//	//	_day = 1;
+//	//}
+//
+//	void Print()
+//	{
+//		cout << _year << "-" << _month << "-" << _day << endl;
+//	}
+//
+//private:
+//	int _year = 1;  // 注意这里不是初始化，是给缺省值（默认构造函数）   
+//	int _month = 1;  // 因为这里是声明
+//	int _day = 1;    
+//};
+//
+//typedef int DataType;
+//class Stack
+//{
+//public:
+//	//void Init(size_t capacity = 3)
+//	//{
+//	//	_array = (DataType*)malloc(sizeof(DataType) * capacity);
+//	//	if (NULL == _array)
+//	//	{
+//	//		perror("malloc申请空间失败!!!");
+//	//		return;
+//	//	}
+//	//	_capacity = capacity;
+//	//	_size = 0;
+//	//}
+//// 构造函数
+//	Stack(size_t capacity = 4)
+//	{
+//		_array = (DataType*)malloc(sizeof(DataType) * capacity);
+//		if (NULL == _array)
+//		{
+//			perror("malloc申请空间失败!!!");
+//			return;
+//		}
+//		_capacity = capacity;
+//		_size = 0;
+//	}
+//
+//	void Push(DataType data)
+//	{
+//		// CheckCapacity();
+//		_array[_size] = data;
+//		_size++;
+//	}
+//
+//
+//private:
+//	DataType* _array;
+//	int _capacity;
+//	int _size;
+//};
+//
+//class MyQueue
+//{
+//private:
+//	Stack _st1;
+//	Stack _st2;
+//};
+//
+//
+//// 调用Init初始化，可能会忘记！导致崩溃出现随机值。
+//// 能不能保证对象一定被初始化？ -- 构造函数
+//int main()
+//{
+//	//Date d1;
+//	//d1.Init(2022, 8, 24);
+//
+//	//Date d1(2022, 8, 24);
+//	//Date d2;
+//
+//	//Stack st;
+//	//st.Push(9);
+//	//st.Push(0);
+//
+//// 默认生成构造函数，
+//// a：内置类型成员不做处理。
+//// b：自定义类型成员会去调用他的默认构造函数
+//// 这个设计是C++早期设计的一个缺陷，
+//// 默认生成构造函数，本来应该内置类型也一并处理，但现在只处理自定义类型。
+//// C++11 打了一个补丁
+//
+//	Date d;
+//
+//	MyQueue q;
+//
+//	return 0;
+//}
+//
+//
+
+//
+//typedef int DataType;
+//class Stack
+//{
+//public:
+//	Stack(size_t capacity = 3) // 全缺省构造函数
+//	{
+//		_array = (DataType*)malloc(sizeof(DataType) * capacity);
+//		if (NULL == _array)
+//		{
+//			perror("malloc申请空间失败!!!");
+//			return;
+//		}
+//		_capacity = capacity;
+//		_size = 0;
+//	}
+//	void Push(DataType data)
+//	{
+//		// CheckCapacity();
+//		_array[_size] = data;
+//		_size++;
+//	}
+//	~Stack() // 析构函数 ~类名
+//	{
+//		if (_array)
+//		{
+//			cout << "~Stack():" << _array << endl;
+//			//这里打印是为了验证编译系统自动调用了析构函数
+//
+//			free(_array);  //有需要释放空间时，
+//			_array = NULL;  //一定要写，否则会造成资源泄漏
+//			_capacity = 0;
+//			_size = 0;
+//		}
+//	}
+//  显式自定义析构函数 可以实现不同空间释放。(自己写)
+//  Queue
+//  List   链式结构（循环逐个节点释放）
+//  SeqList  顺序结构（释放数组头地址）
+//  BinaryTree  树结构（递归释放）
+//private:
+//	DataType* _array;
+//	int _capacity;
+//	int _size;
+//};
+//void TestStack()
+//{
+//	Stack s;
+//	s.Push(1);
+//	s.Push(2);  //结果有打印，说明编译系统自动调用了析构函数
+//}
+// 
+//int main()
+//{
+//	TestStack();
+//	return 0;
+//}
+
+//#include "Person.h"
+//
+//class Time
+//{
+//public:
+//	~Time() // 析构函数
+//	{
+//		cout << "~Time()" << endl;
+//		// 打印为了验证是否有调用
+//	}
+//private:
+//	int _hour;
+//	int _minute;
+//	int _second;
+//};
+//class Date
+//{
+//private:
+//	// 基本类型(内置类型)
+//	int _year = 1970;
+//	int _month = 1;
+//	int _day = 1;
+//
+//	// 自定义类型
+//	Time _t;  
+//
+//	// 类成员的销毁时，编译器生成的默认析构函数，
+//	// 对自定类型成员调用它的析构函数。
+//};
+//int main()
+//{
+//	Date d;  // 结果打印了
+//	return 0;
+//}
+
+
+
+
+
 #include "Person.h"
-
-class Date
-{
-public:
-	//void Init(int year, int month, int day)
-	//{
-	//	_year = year;
-	//	_month = month;
-	//	_day = day;
-	//}
-// 不用Init，改用构造函数
-	Date(int year = 1, int month = 1, int day = 1)
-	{
-		_year = year;
-		_month = month;
-		_day = day;
-	}
-// 构造函数可以函数重载 ，但是 无参数 和 全缺省 不可以重复定义。
- 
-	//Date() 
-	//{
-	//	_year = 1;
-	//	_month = 1;
-	//	_day = 1;
-	//}
-
-	void Print()
-	{
-		cout << _year << "-" << _month << "-" << _day << endl;
-	}
-
-private:
-	int _year;   
-	int _month;  
-	int _day;    
-};
 
 typedef int DataType;
 class Stack
 {
 public:
-	//void Init(size_t capacity = 3)
-	//{
-	//	_array = (DataType*)malloc(sizeof(DataType) * capacity);
-	//	if (NULL == _array)
-	//	{
-	//		perror("malloc申请空间失败!!!");
-	//		return;
-	//	}
-	//	_capacity = capacity;
-	//	_size = 0;
-	//}
-// 构造函数
-	Stack(size_t capacity = 4)
+	Stack(size_t capacity = 3) // 全缺省构造函数
 	{
 		_array = (DataType*)malloc(sizeof(DataType) * capacity);
 		if (NULL == _array)
@@ -429,34 +596,56 @@ public:
 		_capacity = capacity;
 		_size = 0;
 	}
-
 	void Push(DataType data)
 	{
 		// CheckCapacity();
 		_array[_size] = data;
 		_size++;
 	}
-
+	~Stack() // 析构函数
+	{
+		if (_array)
+		{
+			free(_array); 
+			_array = NULL; 
+			_capacity = 0;
+			_size = 0;
+		}
+	}
 
 private:
 	DataType* _array;
 	int _capacity;
 	int _size;
 };
-
-// 调用Init初始化，可能会忘记！导致崩溃出现随机值。
-// 能不能保证对象一定被初始化？ -- 构造函数
+class Date
+{
+public:
+	Date(int year = 1, int month = 1, int day = 1)
+	{
+		_year = year;
+		_month = month;
+		_day = day;
+	}
+	Date(Date& d) // 用引用来实现拷贝构造函数
+	{
+		_year = d._year;
+		_month = d._month;
+		_day = d._day;
+	}
+private:
+	int _year;   
+	int _month;  
+	int _day;    
+};
+void TestStack()
+{
+	Date d1(2022, 7, 23);
+	Date d2(d1);
+}
+ 
 int main()
 {
-	//Date d1;
-	//d1.Init(2022, 8, 24);
-
-	Date d1(2022, 8, 24);
-	Date d2;
-
-	Stack st;
-
+	TestStack();
 	return 0;
 }
-
-
