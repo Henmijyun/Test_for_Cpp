@@ -576,76 +576,255 @@
 //}
 
 
+//
+//
+//
+//#include "Person.h"
+//
+//typedef int DataType;
+//class Stack
+//{
+//public:
+//	Stack(size_t capacity = 3) // 全缺省构造函数
+//	{
+//		_array = (DataType*)malloc(sizeof(DataType) * capacity);
+//		if (NULL == _array)
+//		{
+//			perror("malloc申请空间失败!!!");
+//			return;
+//		}
+//		_capacity = capacity;
+//		_size = 0;
+//	}
+//	void Push(DataType data)
+//	{
+//		// CheckCapacity();
+//		_array[_size] = data;
+//		_size++;
+//	}
+//	~Stack() // 析构函数
+//	{
+//		if (_array)
+//		{
+//			free(_array); 
+//			_array = NULL; 
+//			_capacity = 0;
+//			_size = 0;
+//		}
+//	}
+//
+//private:
+//	DataType* _array;
+//	int _capacity;
+//	int _size;
+//};
+//class Date
+//{
+//public:
+//	Date(int year = 1, int month = 1, int day = 1)
+//	{
+//		_year = year;
+//		_month = month;
+//		_day = day;
+//	}
+//	Date(const Date& d) // 用引用来实现拷贝构造函数
+//	{
+//		//加const 防止赋值出错
+//		_year = d._year;
+//		_month = d._month;
+//		_day = d._day;
+//	}
+//private:
+//	int _year;   
+//	int _month;  
+//	int _day;    
+//};
+//void TestStack()
+//{
+//	Date d1(2022, 7, 23);
+//	Date d2(d1);
+//}
+// 
+//int main()
+//{
+//	TestStack();
+//	return 0;
+//}
+
+
+//运算符重载/////////////////
+//#include "Person.h"
+//
+//class Date
+//{
+//public:
+//	Date(int year = 1, int month = 1, int day = 1)
+//	{
+//		_year = year;
+//		_month = month;
+//		_day = day;
+//	}
+//	bool operator==(const Date& x) //隐藏的参数this
+//	{
+//		return _year == x._year
+//			&& _month == x._month
+//			&& _day == x._day;
+//	}
+//private:
+//	int _year;   
+//	int _month;
+//	int _day;    
+//};
+////bool operator==(const Date& x1, const Date& x2) //类的内置成员是私有的，在外面无法访问
+////{
+////	return x1._year == x2._year
+////		&& x1._month == x2._month
+////		&& x1._day == x2._day;
+////}
+//
+//int main()
+//{
+//	Date d1(2022, 7, 23);
+//	Date d2(2022, 7, 25);
+//
+//	//内置类型可以直接使用运算符运算，编译器知道如何运算。
+//	//自定义类型无法直接使用运算符，编译器也不知道如何运算。想支持，需要自己实现运算符重载。
+//	//在全局域定义：
+//	//cout << (d1 == d2) << endl; 
+//	//cout << operator==(d1, d2) << endl; //编译器会自动转换和识别
+//
+//	//在类中定义：
+//	cout << (d1 == d2) << endl;
+//	cout << d1.operator==(d2) << endl;
+//
+//
+//	return 0;
+//}
 
 
 
-#include "Person.h"
+#include "Date.h"
 
-typedef int DataType;
-class Stack
+
+void TestDate1()
 {
-public:
-	Stack(size_t capacity = 3) // 全缺省构造函数
-	{
-		_array = (DataType*)malloc(sizeof(DataType) * capacity);
-		if (NULL == _array)
-		{
-			perror("malloc申请空间失败!!!");
-			return;
-		}
-		_capacity = capacity;
-		_size = 0;
-	}
-	void Push(DataType data)
-	{
-		// CheckCapacity();
-		_array[_size] = data;
-		_size++;
-	}
-	~Stack() // 析构函数
-	{
-		if (_array)
-		{
-			free(_array); 
-			_array = NULL; 
-			_capacity = 0;
-			_size = 0;
-		}
-	}
-
-private:
-	DataType* _array;
-	int _capacity;
-	int _size;
-};
-class Date
-{
-public:
-	Date(int year = 1, int month = 1, int day = 1)
-	{
-		_year = year;
-		_month = month;
-		_day = day;
-	}
-	Date(Date& d) // 用引用来实现拷贝构造函数
-	{
-		_year = d._year;
-		_month = d._month;
-		_day = d._day;
-	}
-private:
-	int _year;   
-	int _month;  
-	int _day;    
-};
-void TestStack()
-{
-	Date d1(2022, 7, 23);
+	Date d1(2022, 8, 29);
 	Date d2(d1);
+
+	Date d3(2022, 9, 10);
+	d2 = d1 = d3; 	// d1.operator=(&d1, d3)
 }
- 
+
+void TestDate2()
+{
+	Date d4(2022, 8, 25);
+	Date d5(2022, 8, 1);
+	Date d6(2022, 2, 20);
+	//d4 += 4;
+	//d4.Print();
+
+	//d4 += 40;
+	//d4.Print(); // 跨月
+
+	//d4 += 400;
+	//d4.Print(); // 跨年
+
+	//d4 += 4000;
+	//d4.Print(); // 跨闰年
+
+	(d4 + 4).Print(); // 利用返回值打印
+	(d4 + 40).Print(); // 跨月
+	(d4 + 400).Print(); // 跨年
+	(d4 + 4000).Print(); // 跨闰年
+
+	(d4++).Print();
+	(++d4).Print();
+	
+	cout << (d5 - d4) << endl;
+}
+
+void TestDate3()
+{
+	int i = 0;
+	double d = 1.1;
+	Date d6(2022, 6, 8);
+	cout << i << endl; // cout.operator<<(i); 库的底层用的是：运算符重载+函数重载
+	cout << d << endl; // cout.operator<<(d);
+	cout << d6; // 自己写，在全局中用友元函数，重载运算符<< 
+}
+
+void TestMenu()
+{
+	const char* WeeDayToStr[] = { "周一","周二","周三","周四","周五","周六","周日" };
+	Date d1,d2;
+	int day = 0;
+	int option = 0;
+	do
+	{
+		cout << "*******************************" << endl;
+		cout << " 1、日期加/减天数 2、日期减日期" << endl;
+		cout << " 3、日期->周几   -1、退出" << endl;
+		cout << "*******************************" << endl;
+		
+		cout << "请输入:>";
+		cin >> option;
+		if (option == 1)
+		{
+			cout << "请依次输入日期和天数（减天数则输入负数）:";
+			cin >> d1 >> day;  // 从 IO设备 提取到 对象和变量
+			cout << "日期加减天数后的日期：" << d1 + day << endl;
+		}
+		else if (option == 2)
+		{
+			cout << "请依次输入两个日期:>";
+			cin >> d1 >> d2;  // 从 IO设备 提取到 对象和变量
+			cout << "相差的天数：" << d2 - d1 << endl;
+		}
+		else if (option == 3)
+		{
+			cout << "请输入日期:>";
+			cin >> d1;
+			Date start(1, 1, 1); // 公元元年
+			int n = d1 - start; // 相差的天数
+			int weekDay = 0;  // 周一  刚好对应数组下标
+			weekDay += n;
+			//cout << "周" << weekDay % 7 + 1 << endl;
+			cout << WeeDayToStr[weekDay % 7]<< endl;
+
+		}
+		else
+		{ 
+			if (option != -1)
+			{
+				cout << "无此选项，请重新选择！" << endl;
+			}
+		}
+	} while (option != -1);
+}
+
+void TestDate4()
+{
+	Date d1(2022, 8, 25);
+	const Date d2(2022, 8, 25);
+	d1.Print();
+	d2.Print();
+
+	d1 < d2;
+	d2 < d1;
+
+}
+
 int main()
 {
-	TestStack();
+	//TestDate1();
+	//TestDate2();
+	//TestDate3();
+	TestMenu();
+	TestDate4();
 	return 0;
 }
+
+
+
+
+
