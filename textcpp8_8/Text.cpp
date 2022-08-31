@@ -417,17 +417,37 @@
 //}
 
 
+//
+//int main()
+//{
+//	//语法的角度，ra没有开空间
+//	int a = 10;
+//	int& ra = a;
+//	ra = 20;
+//
+//	//语法的角度，pa开了 4 或 8 byte空间
+//	int* pa = &a;
+//	*pa = 20;
+//
+//	return 0;
+//}
+
+
+//ADD两个变量的宏函数
+//#define ADD(x, y) ((x) + (y))
+
+
+#include <iostream>
+using namespace std;
+//inline内联函数：符合条件的情况下，在调用的地方展开
+inline int Add(int x, int y)
+{
+	return x + y;
+}
 
 int main()
 {
-	//语法的角度，ra没有开空间
-	int a = 10;
-	int& ra = a;
-	ra = 20;
-
-	//语法的角度，pa开了 4 或 8 byte空间
-	int* pa = &a;
-	*pa = 20;
+	cout << Add(1, 2) << endl;
 
 	return 0;
 }
