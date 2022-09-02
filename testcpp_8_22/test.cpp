@@ -702,127 +702,568 @@
 //}
 
 
+/////////////////////////////////////////////////////////////////
+//日期类
+//#include "Date.h"
+//
+//
+//void TestDate1()
+//{
+//	Date d1(2022, 8, 29);
+//	Date d2(d1);
+//
+//	Date d3(2022, 9, 10);
+//	d2 = d1 = d3; 	// d1.operator=(&d1, d3)
+//}
+//
+//void TestDate2()
+//{
+//	Date d4(2022, 8, 25);
+//	Date d5(2022, 8, 1);
+//	Date d6(2022, 2, 20);
+//	//d4 += 4;
+//	//d4.Print();
+//
+//	//d4 += 40;
+//	//d4.Print(); // 跨月
+//
+//	//d4 += 400;
+//	//d4.Print(); // 跨年
+//
+//	//d4 += 4000;
+//	//d4.Print(); // 跨闰年
+//
+//	(d4 + 4).Print(); // 利用返回值打印
+//	(d4 + 40).Print(); // 跨月
+//	(d4 + 400).Print(); // 跨年
+//	(d4 + 4000).Print(); // 跨闰年
+//
+//	(d4++).Print();
+//	(++d4).Print();
+//	
+//	cout << (d5 - d4) << endl;
+//}
+//
+//void TestDate3()
+//{
+//	int i = 0;
+//	double d = 1.1;
+//	Date d6(2022, 6, 8);
+//	cout << i << endl; // cout.operator<<(i); 库的底层用的是：运算符重载+函数重载
+//	cout << d << endl; // cout.operator<<(d);
+//	cout << d6; // 自己写，在全局中用友元函数，重载运算符<< 
+//}
+//
+//void TestMenu()
+//{
+//	const char* WeeDayToStr[] = { "周一","周二","周三","周四","周五","周六","周日" };
+//	Date d1,d2;
+//	int day = 0;
+//	int option = 0;
+//	do
+//	{
+//		cout << "*******************************" << endl;
+//		cout << " 1、日期加/减天数 2、日期减日期" << endl;
+//		cout << " 3、日期->周几   -1、退出" << endl;
+//		cout << "*******************************" << endl;
+//		
+//		cout << "请输入:>";
+//		cin >> option;
+//		if (option == 1)
+//		{
+//			cout << "请依次输入日期和天数（减天数则输入负数）:";
+//			cin >> d1 >> day;  // 从 IO设备 提取到 对象和变量
+//			cout << "日期加减天数后的日期：" << d1 + day << endl;
+//		}
+//		else if (option == 2)
+//		{
+//			cout << "请依次输入两个日期:>";
+//			cin >> d1 >> d2;  // 从 IO设备 提取到 对象和变量
+//			cout << "相差的天数：" << d2 - d1 << endl;
+//		}
+//		else if (option == 3)
+//		{
+//			cout << "请输入日期:>";
+//			cin >> d1;
+//			Date start(1, 1, 1); // 公元元年
+//			int n = d1 - start; // 相差的天数
+//			int weekDay = 0;  // 周一  刚好对应数组下标
+//			weekDay += n;
+//			//cout << "周" << weekDay % 7 + 1 << endl;
+//			cout << WeeDayToStr[weekDay % 7]<< endl;
+//
+//		}
+//		else
+//		{ 
+//			if (option != -1)
+//			{
+//				cout << "无此选项，请重新选择！" << endl;
+//			}
+//		}
+//	} while (option != -1);
+//}
+//
+//void TestDate4()
+//{
+//	Date d1(2022, 8, 25);
+//	const Date d2(2022, 8, 25);
+//	d1.Print();
+//	d2.Print();
+//
+//	d1 < d2;
+//	d2 < d1;
+//
+//}
+//
+//int main()
+//{
+//	//TestDate1();
+//	//TestDate2();
+//	//TestDate3();
+//	TestMenu();
+//	TestDate4();
+//	return 0;
+//}
 
-#include "Date.h"
 
 
-void TestDate1()
+
+
+
+
+
+////////////////////////////////////////////////////////////
+//初始化列表
+
+//class A
+//{
+//public:
+//	A(int)
+//	{}
+//private:
+//	int _a;
+//};
+//
+//class B
+//{
+//public:
+//	B(int a, int x)  
+//		:_aobj(a)
+//		, _ref(x)
+//		, _n(10)
+//	{
+//		_ref++; //x是y的临时拷贝，传参是int& x 才会影响外面的y
+//	}
+//private:
+//	A _aobj; // 没有默认构造函数
+//	int& _ref; // 引用
+//	const int _n; // const
+//	int _year = 0; 
+//	// C++11补丁 缺省值 -- 初始化列表在初始化时没有显示写，就会用这个缺省值
+//};
+//int main()
+//{
+//	int y = 0;
+//	B num(50, y);
+//
+//	return 0;
+//}
+//
+
+//
+//#include <iostream>
+//using namespace std;
+//
+//class Date
+//{
+//public:
+//	//explicit修饰构造函数，禁止类型转换
+//	//explicit Date(int year)
+//	Date(int year)
+//		:_year(year)
+//	{
+//		cout << "Date(int year)" << endl;
+//	}
+//
+//	Date(const Date& d)
+//	{
+//		//拷贝构造
+//	}
+//private:
+//	int _year;
+//};
+//
+//int main()
+//{
+//	Date d1(2022);  // 直接调用构造
+//	Date d2 = 2022; // 隐式类型转换：构造 + 拷贝构造 + 优化 ——> 直接调用构造
+//	const Date& d3 = 2022;
+//
+//	int i = 10;
+//	const double& d = i;
+//	
+//
+//	return 0;
+//}
+//
+
+
+
+
+//
+//class Date
+//{
+//public:
+//	// 1. 单参构造函数，没有使用explicit修饰，具有类型转换作用
+//	// explicit修饰构造函数，禁止类型转换---explicit去掉之后，代码可以通过编译
+//	explicit Date(int year)
+//		:_year(year)
+//	{}
+//	
+//	// 2. 虽然有多个参数，但是创建对象时后两个参数可以不传递，没有使用explicit修饰，具有类型转换作用
+//	// explicit修饰构造函数，禁止类型转换
+//	//explicit Date(int year, int month = 1, int day = 1)
+//	//: _year(year)
+//	//, _month(month)
+//	//, _day(day)
+//	//{}
+//	
+//	Date& operator=(const Date& d)
+//	{
+//		if (this != &d)
+//		{
+//			_year = d._year;
+//			_month = d._month;
+//			_day = d._day;
+//		}
+//		return *this;
+//	}
+//private:
+//	int _year;
+//	int _month;
+//	int _day;
+//};
+//void Test()
+//{
+//	Date d1(2022);
+//	// 用一个整形变量给日期类型对象赋值
+//	// 实际编译器背后会用2023构造一个无名对象，最后用无名对象给d1对象进行赋值
+//	d1 = 2023;
+//
+//	// 将1屏蔽掉，2放开时则编译失败，因为explicit修饰构造函数，禁止了单参构造函数类型转换的作用
+//}
+//
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////
+// 静态成员对象
+// 
+//class A
+//{
+//public:
+//	A() 
+//	{ ++_scount; }
+//
+//	A(const A& t) { ++_scount; }
+//
+//	// 静态成员函数 --  没有this指针
+//	static int GetCount()
+//	{
+//		//_a = 1; //err 只能访问静态成员
+//
+//		return _scount;
+//	}
+//
+//private:
+//	int _a;
+//	// 静态成员变量，属于整个类，生命周期整个程序运行期间，存在静态取
+//	static int _scount;  // 声明  存放在静态区
+//};
+//
+//// 类外面定义初始化
+//int A::_scount = 0;
+//
+////int main()
+////{
+////	A a1;
+////	A a2;
+////	A a3(a2);
+////
+////	//cout << a1._scount << endl;
+////	//cout << a2._scount << endl;
+////	//cout << A::_scount << endl;
+////
+////	cout <<A::GetCount() << endl;
+////
+////	return 0;
+////}
+//
+//// 设计一个只能在栈上定义对象的类
+//class StackOnly
+//{
+//public:
+//	static StackOnly CreateObj() // 静态成员函数没有this指针，不需要对象也可以调用
+//	{
+//		StackOnly so;
+//		return so;
+//	}
+//
+//private:
+//	StackOnly(int x = 0, int y = 0)
+//		:_x(x)
+//		, _y(0)
+//	{}
+//private:
+//	int _x = 0;
+//	int _y = 0;
+//};
+//
+//int main()
+//{
+//	//StackOnly so1; // 栈
+//	//static StackOnly so2; // 静态区
+//
+//	StackOnly so3 = StackOnly::CreateObj(); 
+//	// 利用静态成员函数的特性，实现一个只能在栈上定义对象的类
+//
+//	return 0;
+//}
+
+
+
+
+// 流插入 << 运算符重载 全局 （友元）
+// 因为cout在类中不可以作为左操作数，左操作数固定为this，所以定义在全局中。
+// 全局中无法访问类中的私有成员，所以需要用友元函数来实现访问私有。
+// 全局重载 + 友元函数，实现： cout << d1;
+// 带返回值可 cout << d1 << d2; 连续使用
+//class Date
+//{
+//	//友元函数的声明
+//	friend ostream& operator<<(ostream& _cout, const Date& d);
+//	friend istream& operator>>(istream& _cin, Date& d);
+//public:
+//	Date(int year = 1900, int month = 1, int day = 1)
+//		: _year(year)
+//		, _month(month)
+//		, _day(day)
+//	{}
+//private:
+//	int _year;
+//	int _month;
+//	int _day;
+//};
+//
+//// 友元函数的定义
+//ostream& operator<<(ostream& _cout, const Date& d)
+//{
+//	_cout << d._year << "-" << d._month << "-" << d._day;
+//	return _cout;
+//}
+//istream& operator>>(istream& _cin, Date& d)
+//{
+//	_cin >> d._year;
+//	_cin >> d._month;
+//	_cin >> d._day;
+//	return _cin;
+//}
+//int main()
+//{
+//	Date d;
+//	cin >> d;
+//	cout << d << endl;
+//	return 0;
+//}
+
+
+#include <iostream>
+using namespace std;
+//class Time
+//{
+//	friend class Date; // 声明日期类为时间类的友元类，则在日期类中就直接访问Time类中的私有成员变量
+//public:
+//	Time(int hour = 0, int minute = 0, int second = 0)
+//		: _hour(hour)
+//		, _minute(minute)
+//		, _second(second)
+//	{}
+//private:
+//	int _hour;
+//	int _minute;
+//	int _second;
+//};
+//class Date
+//{
+//public:
+//	Date(int year = 1900, int month = 1, int day = 1)
+//		: _year(year)
+//		, _month(month)
+//		, _day(day)
+//	{}
+//	void SetTimeOfDate(int hour, int minute, int second)
+//	{
+//		// 直接访问时间类私有的成员变量
+//		_t._hour = hour;
+//		_t._minute = minute;
+//		_t._second = second;
+//	}
+//private:
+//	int _year;
+//	int _month;
+//	int _day;
+//	Time _t;
+//};
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// 内部类
+//class A
+//{
+//private:
+//	int _h;
+//	static int k;
+//public:
+//	// B定义在A的里面
+//	//  1、受A的 类域 和 访问限定符 的限制。
+//	//  2、B天生是A的友元。 
+//	class B
+//	{
+//	public:
+//		void foo1(const A& a)
+//		{
+//			cout << k << endl;//OK
+//			cout << a._h << endl;//OK -- 友元
+//		}
+//	private:
+//		int _b;
+//	};
+//
+//	void foo2(const B& a)
+//	{
+//		cout << a._b << endl; //err
+//		// 友元是单向的，B->A OK , A->B err
+//	}
+//};
+//int A::k = 1;
+//
+//int main()
+//{
+//	cout << sizeof(A) << endl; // 4
+//	A a;
+//	A::B b;
+//
+//	return 0;
+//}
+
+
+class W
 {
-	Date d1(2022, 8, 29);
-	Date d2(d1);
-
-	Date d3(2022, 9, 10);
-	d2 = d1 = d3; 	// d1.operator=(&d1, d3)
-}
-
-void TestDate2()
-{
-	Date d4(2022, 8, 25);
-	Date d5(2022, 8, 1);
-	Date d6(2022, 2, 20);
-	//d4 += 4;
-	//d4.Print();
-
-	//d4 += 40;
-	//d4.Print(); // 跨月
-
-	//d4 += 400;
-	//d4.Print(); // 跨年
-
-	//d4 += 4000;
-	//d4.Print(); // 跨闰年
-
-	(d4 + 4).Print(); // 利用返回值打印
-	(d4 + 40).Print(); // 跨月
-	(d4 + 400).Print(); // 跨年
-	(d4 + 4000).Print(); // 跨闰年
-
-	(d4++).Print();
-	(++d4).Print();
-	
-	cout << (d5 - d4) << endl;
-}
-
-void TestDate3()
-{
-	int i = 0;
-	double d = 1.1;
-	Date d6(2022, 6, 8);
-	cout << i << endl; // cout.operator<<(i); 库的底层用的是：运算符重载+函数重载
-	cout << d << endl; // cout.operator<<(d);
-	cout << d6; // 自己写，在全局中用友元函数，重载运算符<< 
-}
-
-void TestMenu()
-{
-	const char* WeeDayToStr[] = { "周一","周二","周三","周四","周五","周六","周日" };
-	Date d1,d2;
-	int day = 0;
-	int option = 0;
-	do
+public:
+	W(int x = 0) //构造
 	{
-		cout << "*******************************" << endl;
-		cout << " 1、日期加/减天数 2、日期减日期" << endl;
-		cout << " 3、日期->周几   -1、退出" << endl;
-		cout << "*******************************" << endl;
-		
-		cout << "请输入:>";
-		cin >> option;
-		if (option == 1)
-		{
-			cout << "请依次输入日期和天数（减天数则输入负数）:";
-			cin >> d1 >> day;  // 从 IO设备 提取到 对象和变量
-			cout << "日期加减天数后的日期：" << d1 + day << endl;
-		}
-		else if (option == 2)
-		{
-			cout << "请依次输入两个日期:>";
-			cin >> d1 >> d2;  // 从 IO设备 提取到 对象和变量
-			cout << "相差的天数：" << d2 - d1 << endl;
-		}
-		else if (option == 3)
-		{
-			cout << "请输入日期:>";
-			cin >> d1;
-			Date start(1, 1, 1); // 公元元年
-			int n = d1 - start; // 相差的天数
-			int weekDay = 0;  // 周一  刚好对应数组下标
-			weekDay += n;
-			//cout << "周" << weekDay % 7 + 1 << endl;
-			cout << WeeDayToStr[weekDay % 7]<< endl;
+		cout << "W()" << endl;
+	}
 
-		}
-		else
-		{ 
-			if (option != -1)
-			{
-				cout << "无此选项，请重新选择！" << endl;
-			}
-		}
-	} while (option != -1);
-}
+	W(const W& w) //拷贝构造
+	{
+		cout << "W(const W& w)" << endl;
+	}
 
-void TestDate4()
+	W& operator=(const W& w) //赋值运算符重载
+	{
+		cout << "W& operator=(const W& w)" << endl;
+		return *this;
+	}
+
+	~W() //析构
+	{
+		cout << "~W()" << endl;
+	}
+};
+//
+//void f1(W w)
+//{}
+//
+//void f2(const W& w)
+//{}
+//
+//int main()
+//{
+//	W w1;
+//	f1(w1);
+//	f2(w1);
+//	cout << endl << endl;
+//
+//	f1(W()); // 本来构造+拷贝构造--编译器的优化--直接构造
+//	// 结论：连续一个表达式步骤中，连续构造一般都会优化 -- 合二为一
+//
+//	W w2 = 1;
+//
+//	return 0;
+//}
+
+//W f3()
+//{
+//	W ret;
+//	return ret;
+//}
+//
+// //《深度探索C++对象模型》
+//int main()
+//{
+//	f3(); 
+//	// 1次构造  1次拷贝
+//	cout << endl << endl;
+//
+//	W w1 = f3(); 
+//	// 本来：1次构造  2次拷贝 -- 优化：1次构造  1次拷贝
+//
+//	cout << endl << endl;
+//
+//	W w2;
+//	w2 = f3(); 
+//	// 本来：1次构造  1次拷贝 1次赋值  
+//	// 不是一个表达式步骤，所以不优化
+//
+//	return 0;
+//}
+
+W f(W u)
 {
-	Date d1(2022, 8, 25);
-	const Date d2(2022, 8, 25);
-	d1.Print();
-	d2.Print();
-
-	d1 < d2;
-	d2 < d1;
-
+	cout << "--------" << endl;
+	W v(u);
+	W w = v;
+	cout << "--------" << endl;
+	return w;
 }
 
 int main()
 {
-	//TestDate1();
-	//TestDate2();
-	//TestDate3();
-	TestMenu();
-	TestDate4();
+	W x;
+	W y = f(f(x)); // 1次构造  7次拷贝  or  1次构造  5次拷贝
+
 	return 0;
 }
+
+//int main()
+//{
+//	W x;
+//	W y = f(x); // 1次构造  4次拷贝
+//
+//	return 0;
+//}
+//
+
 
 
 
