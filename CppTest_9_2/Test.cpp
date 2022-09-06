@@ -151,12 +151,19 @@ using namespace std;
 // // 只有在Debug方式下，才调用用户重载的 operator new 和 operator delete
 //#ifdef _DEBUG
 //#define new new(__FILE__, __FUNCTION__, __LINE__)
-//#define delete(p) operator delete(p, __FILE__, __FUNCTION__, __LINE__)
+////#define delete(p) operator delete(p, __FILE__, __FUNCTION__, __LINE__)
 //#endif
+//// 这里宏定义的delete可能无法被调用，其实可以不用宏来实现，
+//// 而是直接实现一个全局的operator delete即可。
+//
 //int main()
 //{
-//	int* p = new int;
-//	delete(p);
+//	int* p1 = new int;
+//	int* p2 = new int;
+//
+//	//delete(p); // 用宏定义 ，需要加（）
+//	delete p; //不用宏，直接全局 ，不需要（）
+//
 //	return 0;
 //}
 
@@ -169,68 +176,169 @@ using namespace std;
 // 每个类可以去实现自己专属operator new  new这个类对象，他就会调自己实现这个operator new
 
 // 实现一个类专属的operator new  -- 了解一下
-struct ListNode
+//struct ListNode
+//{
+//	int _val;
+//	ListNode* _next;
+//
+//	// 内存池 （静态，不用重复创建）
+//	static allocator<ListNode> alloc;
+//
+//	void* operator new(size_t n)
+//	{
+//		cout << "operator new -> STL内存池allocator申请" << endl;
+//		void* obj = alloc.allocate(1);
+//		return obj;
+//	}
+//
+//	void operator delete(void* ptr)
+//	{
+//		cout << "operator delete -> STL内存池allocator申请" << endl;
+//
+//		alloc.deallocate((ListNode*)ptr, 1);
+//	}
+//
+//	struct ListNode(int val)
+//		:_val(val)
+//		, _next(nullptr)
+//	{}
+//};
+//
+//// allocator以后会讲，现在先会用即可
+//// 静态须在全局进行声明。
+//allocator<ListNode> ListNode::alloc;
+//
+//class A
+//{
+//public:
+//	A(int a = 0)
+//		: _a(a)
+//	{
+//		cout << "A():" << this << endl;
+//	}
+//
+//	~A()
+//	{
+//		cout << "~A():" << this << endl;
+//	}
+//
+//private:
+//	int _a;
+//};
+//
+//int main()
+//{
+//	// 频繁申请ListNode. 想提高效率 -- 申请ListNode时，不去malloc，而是自己定制内存池
+//	ListNode* node1 = new ListNode(1);
+//	ListNode* node2 = new ListNode(2);
+//	ListNode* node3 = new ListNode(3);
+//
+//	delete node1;
+//	//delete node2;
+//	delete node3;
+//
+//	A* p1 = new A;
+//
+//	return 0;
+//}
+
+
+
+//class A
+//{
+//public:
+//	A(int a = 0)
+//		: _a(a)
+//	{
+//		cout << "A():" << this << endl;
+//	}
+//	~A()
+//	{
+//		cout << "~A():" << this << endl;
+//	}
+//private:
+//	int _a;
+//};
+//// 定位new/replacement new
+//int main()
+//{
+//	// p1现在指向的只不过是与A对象相同大小的一段空间，
+//	// 还不能算是一个对象，因为构造函数没有执行
+//	A* p1 = (A*)malloc(sizeof(A));
+//	if (p1 == NULL)
+//	{
+//		perror("malloc fail");
+//	}
+//	new(p1)A; // 注意：如果A类的构造函数有参数时，此处需要传参
+//
+//	p1->~A();
+//	free(p1);
+//
+//
+//	A* p2 = (A*)operator new(sizeof(A));
+//	if (p2 == NULL)
+//	{
+//		perror("malloc fail");
+//	}
+//	new(p2)A(10); 
+//
+//	p2->~A();
+//	operator delete(p2);
+//
+//	return 0;
+//}
+
+/////////////////////////////////////////
+// 模板
+
+//泛型函数 -- 虽然利用重载和引用，但是还是需要写多个函数，很麻烦
+//void Swap(int& x, int& y)
+//{
+//	int tmep = x;
+//	x = y;
+//	y = tmep;
+//}
+//
+//void Swap(double& x, double& y)
+//{
+//	double tmep = x;
+//	x = y;
+//	y = tmep;
+//}
+//
+//void Swap(char& x, char& y)
+//{
+//	char tmep = x;
+//	x = y;
+//	y = tmep;
+//}
+
+// 泛型编程 -- 模板
+// 模板参数(模板类型) -- 类似函数参数(参数对象)
+// typename后面类型名字T是随便取，Ty、K、V，一般是大写字母或者单词首字母大写
+// T 代表是一个模板类型(虚拟类型)
+template<typename T>  
+//template<class T>  // 也可以写class（基本相同）
+void Swap(T& left, T& right)
 {
-	int _val;
-	ListNode* _next;
-
-	// 内存池 （静态，不用重复创建）
-	static allocator<ListNode> alloc;
-
-	void* operator new(size_t n)
-	{
-		cout << "operator new -> STL内存池allocator申请" << endl;
-		void* obj = alloc.allocate(1);
-		return obj;
-	}
-
-	void operator delete(void* ptr)
-	{
-		cout << "operator delete -> STL内存池allocator申请" << endl;
-
-		alloc.deallocate((ListNode*)ptr, 1);
-	}
-
-	struct ListNode(int val)
-		:_val(val)
-		, _next(nullptr)
-	{}
-};
-
-// allocator以后会讲，现在先会用即可
-// 静态须在全局进行声明。
-allocator<ListNode> ListNode::alloc;
-
-class A
-{
-public:
-	A(int a = 0)
-		: _a(a)
-	{
-		cout << "A():" << this << endl;
-	}
-
-	~A()
-	{
-		cout << "~A():" << this << endl;
-	}
-
-private:
-	int _a;
-};
+	T tmp = left;
+	left = right;
+	right = tmp;
+}
 
 int main()
 {
-	// 频繁申请ListNode. 想提高效率 -- 申请ListNode时，不去malloc，而是自己定制内存池
-	ListNode* node1 = new ListNode(1);
-	ListNode* node2 = new ListNode(2);
-	ListNode* node3 = new ListNode(3);
+	int i = 1, j = 2;
+	double x = 1.1, y = 2.2;
+	Swap(i, j);
+	Swap(x, y);
 
-	delete node1;
-	//delete node2;
-	delete node3;
+	char m = 'A', n = 'B';
+	Swap(m, n);
 
-	A* p1 = new A;
+	//map<string, string>::iterator it = dict.begin();
+	//auto it = dict.begin(); // 与auto不同，auto主要用于编译器自动推导类型，简化代码书写
 
 	return 0;
 }
+
