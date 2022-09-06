@@ -1,7 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
-#include <stdlib.h>
-#include <iostream>
+#include<iostream>
+#include<string>
+#include <assert.h>
 using namespace std;
 
 //class A
@@ -317,28 +318,431 @@ using namespace std;
 // 模板参数(模板类型) -- 类似函数参数(参数对象)
 // typename后面类型名字T是随便取，Ty、K、V，一般是大写字母或者单词首字母大写
 // T 代表是一个模板类型(虚拟类型)
-template<typename T>  
-//template<class T>  // 也可以写class（基本相同）
-void Swap(T& left, T& right)
+//template<typename T>  
+////template<class T>  // 也可以写class（基本相同）
+//void Swap(T& left, T& right)
+//{
+//	T tmp = left;
+//	left = right;
+//	right = tmp;
+//}
+//
+//int main()
+//{
+//	int i = 1, j = 2;
+//	double x = 1.1, y = 2.2;
+//	Swap(i, j);
+//	Swap(x, y);
+//
+//	char m = 'A', n = 'B';
+//	Swap(m, n);
+//
+//	//map<string, string>::iterator it = dict.begin();
+//	//auto it = dict.begin(); // 与auto不同，auto主要用于编译器自动推导类型，简化代码书写
+//
+//	return 0;
+//}
+//
+
+
+
+
+
+//class A
+//{
+//public:
+//	A(int a = 0)
+//		: _a(a)
+//	{
+//		cout << "A():" << this << endl;
+//	}
+//
+//	~A()
+//	{
+//		cout << "~A():" << this << endl;
+//	}
+//
+//private:
+//	int _a;
+//};
+//
+//template<class T>
+//T Add(const T& left, const T& right)
+//{
+//	return left + right;
+//}
+//
+//template<class T>
+//T* Func(int n) // 传参只传数量，所以如果不显示写实例化，根本不知道new什么类型的对象
+//{
+//	T* a = new T[n]; // 生成n个T类型的数组空间，然后a指向首元素地址
+//	return a;
+//}
+//
+//int main()
+//{
+//	// Add(1.1, 2); // 推演实例化矛盾，报错
+//
+//	// 编译器自动推演，隐式实例化
+//	cout << Add(1, 2) << endl;  // 自动推演类型
+//
+//	// 此时有两种处理方式：1. 用户自己来强制转化 2. 使用显式实例化
+//	cout << Add((int)1.1, 2) << endl;  // 1
+//	cout << Add(1.1, (double)2) << endl;
+//
+//	// 显示实例化
+//	cout << Add<int>(1.1, 2) << endl;  // 2
+//	cout << Add<double>(1.1, 2) << endl; // 自己指定推演的类型，项目中不推荐不同类型混写
+//
+//	// 必须显示实例化才能调用
+//	Func<A>(10);
+//
+//	return 0;
+//}
+
+
+//// 专门处理int的加法函数  传参类型相同时，优先度+1
+//int Add(int left, int right)
+//{
+//	return left + right;
+//}
+//// 通用加法函数
+//template<class T>
+//T Add(T left, T right)
+//{
+//	return left + right;
+//}
+//void Test()
+//{
+//	Add(1, 2); // 与非模板函数匹配，编译器不需要特化
+//	Add<int>(1, 2); // 调用编译器特化的Add版本
+//}
+
+
+// 专门处理int的加法函数   编译器根据传参类型，自动选择
+//int Add(int left, int right)
+//{
+//	return left + right;
+//}
+//
+//// 通用加法函数
+//template<class T1, class T2>
+//T1 Add(T1 left, T2 right)
+//{
+//	return left + right;
+//}
+//
+//void Test()
+//{
+//	Add(1, 2); // 与非函数模板类型完全匹配，不需要函数模板实例化
+//	Add(1, 2.0); // 模板函数可以生成更加匹配的版本，编译器根据实参生成更加匹配的Add函数
+//}
+
+
+
+
+
+
+
+
+
+
+
+//
+//typedef char STDataType;
+//class Stack
+//{
+//private:
+//	STDataType* _a;
+//	int top;
+//	int capacity;
+//};
+//
+//class Stacki
+//{
+//private:
+//	int* _a;
+//	int top;
+//	int capacity;
+//};
+//
+//class Stackc
+//{
+//private:
+//	char* _a;
+//	int top;
+//	int capacity;
+//};
+//
+//int main()
+//{
+//	Stackc st1; // char
+//	Stacki st2; // int
+//
+//	return 0;
+//}
+
+
+///////////////////////////
+
+
+//template<typename T>
+//class Stack
+//{
+//public:
+//	/*Stack(size_t capacity = 4)
+//		:_a(nullptr)
+//		, _top(0)
+//		, _capacity(0)
+//		{
+//		if (capacity > 0)
+//		{
+//		_a = new T[capacity];
+//		_capacity = capacity;
+//		_top = 0;
+//		}
+//		}*/
+//
+//	Stack(size_t capacity = 0)
+//	{
+//		if (capacity > 0)
+//		{
+//			_a = new T[capacity];
+//			_capacity = capacity;
+//			_top = 0;
+//		}
+//	}
+//
+//	~Stack()
+//	{
+//		delete[] _a;
+//		_a = nullptr;
+//		_capacity = _top = 0;
+//	}
+//
+//	void Push(const T& x);
+//
+//	void Pop()
+//	{
+//		assert(_top > 0);
+//		--_top;
+//	}
+//
+//	bool Empty()
+//	{
+//		return _top == 0;
+//	}
+//
+//	const T& Top()
+//	{
+//		assert(_top > 0);
+//
+//		return _a[_top - 1];
+//	}
+//private:
+//	T* _a = nullptr;
+//	size_t _top = 0;
+//	size_t _capacity = 0;
+//};
+//
+//// 17:10继续
+//template<class T>
+//void Stack<T>::Push(const T& x)
+//{
+//	if (_top == _capacity)
+//	{
+//		size_t newCapacity = _capacity == 0 ? 4 : _capacity * 2;
+//		// 1、开新空间
+//		// 2、拷贝数据
+//		// 3、释放旧空间
+//		T* tmp = new T[newCapacity];
+//		if (_a)
+//		{
+//			memcpy(tmp, _a, sizeof(T)*_top);
+//			delete[] _a;
+//		}
+//
+//		_a = tmp;
+//		_capacity = newCapacity;
+//	}
+//
+//	_a[_top] = x;
+//	++_top;
+//}
+//
+//// 模板不支持分离编译。 声明放在.h  定义放在.cpp -- 原因：模板进阶再讲解
+//// 模板在同一个文件中，是可以声明和定义分离的 
+
+
+//#include "Stack.hpp"
+//
+//int main()
+//{
+//	try
+//	{
+//		// 类模板都是显示实例化
+//		// 虽然他们用了一个类模板，但是Stack<int>，Stack<char> 两个类型
+//		//Stack<int> st1;
+//		//Stack<char> st2;
+//		//Stack<Date> st3;
+//
+//		//// 知道自己要存100个数据，避免插入时扩容消耗
+//		//Stack<int> st4(100);
+//		//Stack<int> st5(0);
+//
+//
+//		Stack<int> st1;
+//		st1.Push(1);
+//		st1.Push(2);
+//		st1.Push(3);
+//		st1.Push(4);
+//		st1.Push(5);
+//
+//		//st1.Top()++;  // 返回值加了引用，可能会导致外部修改内部数据的情况
+//		//st1.Top() *= 2;  // 所以应该在加引用 & 之后，再加上 const 防止被修改。
+//
+//		while (!st1.Empty())
+//		{
+//			cout << st1.Top() << " ";
+//			st1.Pop();
+//		}
+//		cout << endl;
+//
+//		//Stack<> st2;  // 模板加了全省类型之后，创建对象的时候还是要加<>
+//	}
+//	catch (const exception& e) // 在工程中，try 和catch 可以让new的抛异常打印发生的异常。
+//	{
+//		cout << e.what() << endl;
+//	}
+//
+//	return 0;
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// 动态顺序表
+//// 注意：Vector不是具体的类，是编译器根据被实例化的类型生成具体类的模具
+//template<class T>
+//class Vector
+//{
+//public:
+//	Vector(size_t capacity = 10)
+//		: _pData(new T[capacity])
+//		, _size(0)
+//		, _capacity(capacity)
+//	{}
+//	// 使用析构函数演示：在类中声明，在类外定义。
+//	~Vector();
+//	void PushBack(const T& data)；
+//		void PopBack()；
+//		// ...
+//		size_t Size() { return _size; }
+//	T& operator[](size_t pos)
+//	{
+//		assert(pos < _size);
+//		return _pData[pos];
+//	}
+//private:
+//	T* _pData;
+//	size_t _size;
+//	size_t _capacity;
+//};
+//// 注意：类模板中函数放在类外进行定义时，需要加模板参数列表
+//template <class T>
+//Vector<T>::~Vector()
+//{
+//	if (_pData)
+//		delete[] _pData;
+//	_size = _capacity = 0;
+//}
+
+
+
+
+//int main()
+//{
+//	char a1[] = "hello";
+//	char a2[] = "我草";  
+//	// 通过Unicode编码系统来实现文字的表示。
+//
+//	//char a3[5] = { -79, -56, -52, -40, 0 }; 
+//	// “比” 的编码是 -79和-56，“特” 的编码是-52和-40。
+//	char a3[5] = { -50, -46, -78, -35, 0 }; 
+//	cout << a3 << endl; // 我草
+//
+//	// 净网
+//	// 国粹词库
+//	// 同音字  我草 卧槽
+//	
+//		
+//		
+//		
+//	/*a3[3]++;
+//	cout << a3 << endl;  // 相邻的编码为同音字
+//
+//	a3[3]++;
+//	cout << a3 << endl;
+//
+//	a3[3]++;
+//	cout << a3 << endl;*/
+//
+//	a3[1]--;
+//	a3[3]--;
+//	cout << a3 << endl; // 窝曹
+//
+//	a3[1]--;
+//	a3[3]--;
+//	cout << a3 << endl; // 涡槽
+//
+//	a3[1]--;
+//	a3[3]--;
+//	cout << a3 << endl; // 蜗糙
+//
+//	char ch = 'a'; // 97
+//
+//	return 0;
+//}
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////
+// string
+
+
+void TestString()
 {
-	T tmp = left;
-	left = right;
-	right = tmp;
+	string s1;
+	string s2("hello");
 }
+
 
 int main()
 {
-	int i = 1, j = 2;
-	double x = 1.1, y = 2.2;
-	Swap(i, j);
-	Swap(x, y);
-
-	char m = 'A', n = 'B';
-	Swap(m, n);
-
-	//map<string, string>::iterator it = dict.begin();
-	//auto it = dict.begin(); // 与auto不同，auto主要用于编译器自动推导类型，简化代码书写
-
+	TestString();
 	return 0;
 }
+
+
+
+
+
+
+
+
 
