@@ -68,13 +68,24 @@ void TestString3() // []运算符重载
 	// s2[100]; // 内部会检查越界
 }
 
+void TestString4()
+{
+	string s("hello");
+	string::iterator it = s.begin(); // 一般命名it，begin()为首元素 的位置
+	while (it != s.end()) // end()为最后一个元素 +1 的位置
+	{
+		cout << *it << " ";
+		++it;
+	}
+	cout << endl;
+}
 
 int main()
 {
 	//TestString1();
 	//TestString2();
-	TestString3();
-
+	//TestString3();
+	TestString4();
 	return 0;
 }
 
