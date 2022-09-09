@@ -230,6 +230,36 @@ void TestString7()
 	}
 }
 
+// 例题：字符串相加
+//class Solution {
+//public:
+//	string addStrings(string num1, string num2) {
+//		int end1 = num1.size() - 1, end2 = num2.size() - 1;
+//		int next = 0;
+//		string strRet;  // 保存结果
+//		while (end1 >= 0 || end2 >= 0)
+//		{
+//			int val1 = end1 >= 0 ? num1[end1] - '0' : 0;  // 减字符零-'0' 把字符->数字，保存到val1
+//			int val2 = end2 >= 0 ? num2[end2] - '0' : 0;
+//			int ret = val1 + val2 + next;
+//			next = ret > 9 ? 1 : 0;
+//
+//			strRet += (ret % 10) + '0';  // 利用 += 运算符重载，尾插字符 （数字->字符 +'0'）
+//
+//			--end1;  // 从后往前走
+//			--end2;
+//		}
+//		if (1 == next)
+//			strRet += '1';
+//
+//		// 尾插完了之后， 逆序
+//		reverse(strRet.begin(), strRet.end());
+//
+//		return strRet;
+//	}
+//};
+
+
 int main()
 {
 	//TestString1();
