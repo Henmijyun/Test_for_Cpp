@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <assert.h>
 
 using namespace std;
 
@@ -259,6 +260,60 @@ void TestString7()
 //	}
 //};
 
+void TestString8()
+{
+	string str("wo lai le");
+	/*for (size_t i = 0; i < str.size(); ++i)
+	{
+		if (' ' == str[i])
+		{ 
+			str.insert(i, "20%");
+			i += 3;
+		}
+	}
+	cout << str << endl;
+
+
+	for (size_t i = 0; i < str.size(); ++i)
+	{
+		if (' ' == str[i])
+		{
+			str.erase(i, 1);
+		}
+	}
+	cout << str << endl;*/
+
+	// 以空间换时间
+	string newstr;
+	for (size_t i = 0; i < str.size(); ++i)
+	{
+		if (' ' != str[i])
+		{
+			newstr += str[i];
+		}
+		else
+		{
+			newstr += "20%";
+		}
+	}
+	cout << newstr << endl;
+
+}
+void TestString9()
+{
+	string filename("Test.cpp");
+
+
+	FILE* fout = fopen(filename.c_str(), "r");
+	assert(fout);
+	char ch = fgetc(fout);
+	while (ch != EOF)
+	{
+		cout << ch;
+		ch = fgetc(fout);
+	}
+}
+
 
 int main()
 {
@@ -268,7 +323,11 @@ int main()
 	//TestString4();
 	//TestString5();
 	//TestString6();
-	TestString7();
+	//TestString7();
+	//TestString8();
+	TestString9();
+
+
 	return 0;
 }
 
