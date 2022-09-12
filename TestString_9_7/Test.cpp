@@ -301,19 +301,56 @@ void TestString8()
 }
 void TestString9()
 {
+	// 把文件内容 读取到 控制台面板
 	string filename("Test.cpp");
-
-
-	FILE* fout = fopen(filename.c_str(), "r");
+	FILE* fout = fopen(filename.c_str(), "r"); //以C的形式返回字符串
 	assert(fout);
 	char ch = fgetc(fout);
-	while (ch != EOF)
+	while (ch != EOF) 
 	{
 		cout << ch;
 		ch = fgetc(fout);
 	}
 }
 
+void TestString10()
+{
+	string filename("Test.cpp");
+	cout << filename << endl;
+	cout << filename.c_str() << endl;  // 表面看起来没区别
+
+	filename += '\0';  // 但是特殊情况下，就出问题了
+	filename += "string.cpp";
+	cout << filename << endl;  // string 对象按size为准
+	cout << filename.c_str() << endl;  // 常量字符串对象\0结尾
+ 
+	cout << filename.size() << endl;
+	string copy = filename;
+	cout << copy << endl << endl;
+
+	for (unsigned char ch = 0; ch < 128; ++ch)
+	{
+		cout << ch; // 控制台打印ASCII表
+	}
+	cout << "\0" << endl; // 无法打印
+}
+
+void TestString11()
+{
+	string filename("Test.cpp.tar.rar");
+	// 找后缀 -> find
+	// size_t pos = filename.find('.');  // .cpp.tar.rar 第一个.开始的全部
+	size_t pos = filename.rfind('.'); // .rar 查找到字符串中，最后一个出现的内容（逆方向查找）
+	if (pos != string::npos)
+	{
+		//string suff = filename.substr(pos, filename.size() - pos); // ok
+		string suff = filename.substr(pos); // 可以缺省，两种都行
+		cout << suff << endl;
+	}
+
+	string url1 = "https://cplusplus.com/reference/string/string/rfind/";
+	string url2 = "https://manaba.hokuriku-u.ac.jp/ct/home";
+}
 
 int main()
 {
@@ -325,7 +362,9 @@ int main()
 	//TestString6();
 	//TestString7();
 	//TestString8();
-	TestString9();
+	//TestString9();
+	//TestString10();
+	TestString11();
 
 
 	return 0;
