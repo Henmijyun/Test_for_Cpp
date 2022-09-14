@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <assert.h>
+#include "MyString.h"
 
 using namespace std;
 
@@ -352,6 +353,8 @@ void TestString11()
 	string url2 = "https://manaba.hokuriku-u.ac.jp/ct/home";
 }
 
+
+
 int main()
 {
 	//TestString1();
@@ -365,7 +368,17 @@ int main()
 	//TestString9();
 	//TestString10();
 	TestString11();
-
+	string s1("hello");
+	string s2;
+	
+	cout << s1.c_str() << endl;  // c_str()返回c形式的字符串char*
+	cout << s2.c_str() << endl;
+	
+	for (auto ch : s1)
+	{
+		cout << ch << ' ';
+	}
+	cout << endl;
 
 	return 0;
 }
