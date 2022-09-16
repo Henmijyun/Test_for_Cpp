@@ -1,12 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS 1
-
-#include <iostream>
-#include <string>
-#include <list>
-#include <assert.h>
 #include "MyString.h"
-
-using namespace std;
 
 void TestString1() //构造
 {
@@ -336,6 +329,33 @@ void TestString10()
 	cout << "\0" << endl; // 无法打印
 }
 
+
+void DealUrl(const string& url)
+{
+	size_t pos1 = url.find("://");  // find()查找://   pos1指向：
+	if (pos1 == string::npos)
+	{
+		// 如果到最后都没有://，说明是非法链接
+		cout << "非法url" << endl;
+		return;
+	}  
+
+	string protocol = url.substr(0, pos1);  // pos1 为 5 ，所以截取下标0到4
+	cout << protocol << endl;  // https
+
+	size_t pos2 = url.find('/', pos1 + 3); 
+	if (pos2 == string::npos)
+	{
+		cout << "非法url" << endl;
+		return;
+	}
+	string domain = url.substr(pos1 + 3, pos2 - pos1 - 3);
+	cout << domain << endl;
+
+	string uri = url.substr(pos2 + 1);
+	cout << uri << endl << endl;
+}
+
 void TestString11()
 {
 	string filename("Test.cpp.tar.rar");
@@ -349,37 +369,58 @@ void TestString11()
 		cout << suff << endl;
 	}
 
-	string url1 = "https://cplusplus.com/reference/string/string/rfind/";
-	string url2 = "https://manaba.hokuriku-u.ac.jp/ct/home";
+	string url1 = "https://cplusplus.com/reference/string/string/";
+	string url2 = "https://image.baidu.com/search/detail?ct=503316480&z=0&ipn=d&word=ascall&step_word=&hs=0&pn=0&spn=0&di=7108135681917976577&pi=0&rn=1&tn=baiduimagedetail&is=0%2C0&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=2613959014%2C543572025&os=2740573600%2C1059518451&simid=2613959014%2C543572025&adpicid=0&lpn=0&ln=179&fr=&fmq=1660115697093_R&fm=&ic=undefined&s=undefined&hd=undefined&latest=undefined&copyright=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&ist=&jit=&cg=&bdtype=0&oriquery=&objurl=https%3A%2F%2Fgimg2.baidu.com%2Fimage_search%2Fsrc%3Dhttp%3A%2F%2Fimg.php.cn%2Fupload%2Fimage%2F147%2F157%2F796%2F1593765739620093.png%26refer%3Dhttp%3A%2F%2Fimg.php.cn%26app%3D2002%26size%3Df9999%2C10000%26q%3Da80%26n%3D0%26g%3D0n%26fmt%3Dauto%3Fsec%3D1662707704%26t%3Da68cb238bbb3f99d0554098c785d526e&fromurl=ippr_z2C%24qAzdH3FAzdH3Fooo_z%26e3Brir_z%26e3BvgAzdH3FuwqAzdH3F9c9amd_z%26e3Bip4s&gsm=1&rpstart=0&rpnum=0&islist=&querylist=&nojc=undefined&dyTabStr=MCwzLDIsNCw2LDEsNSw3LDgsOQ%3D%3D";
+	string url3 = "ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf";
+
+	DealUrl(url1);
+	DealUrl(url2);
+	DealUrl(url3);
 }
 
 
+//int main()
+//{
+//	//TestString1();
+//	//TestString2();
+//	//TestString3();
+//	//TestString4();
+//	//TestString5();
+//	//TestString6();
+//	//TestString7();
+//	//TestString8();
+//	//TestString9();
+//	//TestString10();
+//	TestString11();
+//	string s1("hello");
+//	string s2;
+//	
+//	cout << s1.c_str() << endl;  // c_str()返回c形式的字符串char*
+//	cout << s2.c_str() << endl;
+//	
+//	for (auto ch : s1)
+//	{
+//		cout << ch << ' ';
+//	}
+//	cout << endl;
+//
+//	return 0;
+//}
+
+#include "MyString.h"
 
 int main()
 {
-	//TestString1();
-	//TestString2();
-	//TestString3();
-	//TestString4();
-	//TestString5();
-	//TestString6();
-	//TestString7();
-	//TestString8();
-	//TestString9();
-	//TestString10();
-	TestString11();
-	string s1("hello");
-	string s2;
-	
-	cout << s1.c_str() << endl;  // c_str()返回c形式的字符串char*
-	cout << s2.c_str() << endl;
-	
-	for (auto ch : s1)
+	try
 	{
-		cout << ch << ' ';
+		//bit::TestString1();
+		bit::TestString2();
 	}
-	cout << endl;
-
+	catch (const exception& e) // 抛异常处理
+	{
+		cout << e.what() << endl;  
+	}
+	
 	return 0;
 }
 
