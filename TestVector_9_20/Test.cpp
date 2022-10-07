@@ -3,7 +3,7 @@
 
 #include "MyVector.h"
 
-int mian()
+int main()
 {
 	try
 	{
