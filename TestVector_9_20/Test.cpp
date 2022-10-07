@@ -7,7 +7,7 @@ int mian()
 {
 	try
 	{
-		bit::TestVector1();
+		skk::TestVector1();
 	}
 	catch (const exception& e) // Å×Òì³£´¦Àí
 	{
