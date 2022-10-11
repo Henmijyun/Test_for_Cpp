@@ -7,7 +7,10 @@ int main()
 {
 	try
 	{
-		skk::TestVector1();
+		//skk::TestVector1();
+		//skk::TestVector2();
+		skk::TestVector3();
+
 	}
 	catch (const exception& e) // Å×Òì³£´¦Àí
 	{

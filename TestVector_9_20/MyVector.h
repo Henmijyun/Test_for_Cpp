@@ -45,6 +45,59 @@ namespace skk
 			, _end_of_storage(nullptr)
 		{}
 
+		// v2(v1)
+		/*vector(const vector<T>& v) // 拷贝构造（传统深拷贝）
+		{
+			_start = new T[v.size()]; // v.capacity()也可以
+			memcpy(_start, v._start, sizeof(T) * v.size()); // 拷贝数据
+			_finish = _start + v.size();
+			_end_of_storage = _start + v.size();
+		}*/
+
+		/*vector(const vector<T>& v)
+			:_start(nullptr)
+			, _finish(nullptr)
+			, _end_of_storage(nullptr)
+		{
+			reserve(v.size());
+			for (const auto& e : v)
+			{
+				push_back(e);
+			}
+		}*/
+
+
+		template <class InputIterator>   // 模板可以嵌套        
+		vector(InputIterator first, InputIterator last)  // 使得可以用其他类来实现 
+			:_start(nullptr)
+			, _finish(nullptr)
+			, _end_of_storage(nullptr)
+		{
+			while (first != last)
+			{
+				push_back(*first);
+				++first;
+			}
+		}
+
+		void swap(vector<T>& v) 
+		{
+			// 直接拷贝是深拷贝，这里分开一个个的拷贝，相当于内置类型拷贝
+			std::swap(_start, v._start);
+			std::swap(_finish, v._finish);
+			std::swap(_end_of_storage, v._end_of_storage);
+		}
+
+		// v2(v1)
+		vector(const vector<T>& v)
+			:_start(nullptr)
+			, _finish(nullptr)
+			, _end_of_storage(nullptr)
+		{
+			vector<T> tmp(v.begin(), v.end());
+			swap(tmp);
+		}
+
 		~vector()
 		{
 			delete[] _start;
@@ -93,12 +146,16 @@ namespace skk
 
 		void push_back(const T& x)
 		{
+			/*
 			if (_finish == _end_of_storage)
 			{
 				reserve(capacity() == 0 ? 4 : capacity() * 2);
 			}
 			*_finish = x;
 			++_finish;
+			*/
+
+			insert(end(), x); // 复用
 		}
 
 		void pop_back()
@@ -107,7 +164,7 @@ namespace skk
 			--_finish;
 		}
 
-		void insert(iterator pos, const T& x) // 指定位置插入
+		iterator insert(iterator pos, const T& x) // 指定位置插入
 		{
 			assert(pos >= _start && pos <= _finish);
 			
@@ -126,11 +183,27 @@ namespace skk
 
 			*pos = x;
 			++_finish;
+
+			return pos;
 		}
 
-		void erase(iterator pos) // 指定位置删除
+		// STL规定erase返回删除位置下一个位置的迭代器
+		iterator erase(iterator pos) // 指定位置删除
 		{
+			assert(pos >= _start && pos < _finish);
 
+			iterator begin = pos + 1;
+			while (begin != _finish)
+			{
+				*(begin - 1) = *begin;
+				++begin;
+			}
+
+			--_finish;
+
+			// 可能会有些版本有缩容的情况--以时间换空间
+			// 缩容也会使当前迭代器失效
+			return pos;
 		}
 
 
@@ -175,18 +248,71 @@ namespace skk
 		auto pos = find(n.begin(), n.end(), 3); // 查找对应数据，获取位置
 		if (pos != n.end())  // 查找失败的话返回end位置
 		{
-			n.insert(pos, 7); // 指定位置插入
+			// 在pos位置插入数据以后，不要访问pos，因为pos可能失效了。
+			pos = n.insert(pos, 7); // 指定位置插入
+			++pos;
+			++pos;
 		}
+		else
+		{
+			++pos;
+		}
+
 		for (auto e : n) // 范围for
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+
+
+	}
+
+	void TestVector2()
+	{
+		vector<int> n;
+		n.push_back(1);
+		n.push_back(2);
+		n.push_back(3);
+		n.push_back(4);
+		n.push_back(5);
+
+		auto pos = find(n.begin(), n.end(), 1); 
+		if (pos != n.end()) 
+		{
+			pos = n.erase(pos); // 指定位置删除
+		}
+		else
+		{
+			++pos;
+		}
+
+		for (auto e : n) 
 		{
 			cout << e << " ";
 		}
 		cout << endl;
 	}
 
-	void TestVector2()
+	void TestVector3()
 	{
+		vector<int> n;
+		n.push_back(1);
+		n.push_back(2);
+		n.push_back(3);
+		n.push_back(4);
+		n.push_back(5);
+		for (auto e : n)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
 
+		vector<int> v(n);
+		for (auto e : v)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
 	}
 
 }
