@@ -745,112 +745,155 @@
 
 
 
+//
+//#include <iostream>
+//
+//using namespace std;
+//
+//class Person
+//{
+//public:
+//	virtual void BuyTicket()
+//	{
+//		cout << "Person::买票-全价" << endl;
+//	}
+//
+//	virtual void Func1()
+//	{
+//		cout << "Person::Func1()" << endl;
+//	}
+//};
+//
+//class Student : public Person {
+//public:
+//	virtual void BuyTicket()
+//	{
+//		cout << "Student::买票-半价" << endl;
+//	}
+//
+//	virtual void Func2()
+//	{
+//		cout << "Student::Func2()" << endl;
+//	}
+//};
+//
+//typedef void(*VFPTR)();    // 把一个 函数指针类型 命名为 VFPTR
+//
+////void PrintVFTable(VFPTR table[])  // 同VFPTR* table
+//// 
+////void PrintVFTable(VFPTR* table, size_t n)  
+//// g++环境下，不会自动在虚表末尾加nullptr，所以必须指定访问函数的个数
+//
+//void PrintVFTable(VFPTR* table)
+//{
+//	for (size_t i = 0; table[i] != nullptr; ++i)
+//		//for (size_t i = 0; i < n; ++i)  // g++环境
+//	{
+//		printf("vft[%d]:%p->", i, table[i]);
+//		//table[i]();  // 同下
+//		VFPTR pf = table[i];  // 遍历每个虚表中的函数
+//		pf();  // 调用该函数
+//	}
+//	cout << endl;
+//}
+//
+//class Base1 {
+//public:
+//	virtual void func1() { cout << "Base1::func1" << endl; }
+//	virtual void func2() { cout << "Base1::func2" << endl; }
+//private:
+//	int b1 = 1;
+//};
+//
+//class Base2 {
+//public:
+//	virtual void func1() { cout << "Base2::func1" << endl; }
+//	virtual void func2() { cout << "Base2::func2" << endl; }
+//private:
+//	int b2 = 2;
+//};
+//
+//class Derive : public Base1, public Base2 {
+//public:
+//	virtual void func1() { cout << "Derive::func1" << endl; }
+//	virtual void func3() { cout << "Derive::func3" << endl; }
+//private:
+//	int d = 3;
+//};
+//
+//int main()
+//{
+//	// 同一个类型的对象共用一个虚表
+//	Person p1;
+//	Person p2;
+//
+//	// vs下 不管是否完成重写，子类虚表跟父类虚表都不是同一个
+//	Student s1;
+//	Student s2;
+//
+//	/*PrintVFTable((VFPTR*)*(int*)&s1, 3);
+//	PrintVFTable((VFPTR*)*(int*)&p1, 2);*/
+//
+//	Derive d;
+//	//cout << sizeof(d) << endl;
+//
+//	//PrintVFTable((VFPTR*)(*(int*)&d));
+//	////PrintVFTable((VFPTR*)(*(int*) ( (char*) &d+sizeof(Base1) ) ));
+//
+//	//Base2* ptr2 = &d;
+//	//PrintVFTable((VFPTR*)(*(int*)(ptr2)));
+//
+//	// 符合多态，去指向对象虚函数表中去找func1的地址调用
+//	Base1* ptr1 = &d;
+//	ptr1->func1();
+//
+//	Base2* ptr2 = &d;
+//	ptr2->func1();
+//
+//	//d.func1();
+//
+//	return 0;
+//}
 
-#include <iostream>
 
+#include<iostream>
 using namespace std;
+class A{
+public:
+	A(char *s) { cout << s << endl; }
+	~A(){}
+};
 
-class Person
+class B :virtual public A
 {
 public:
-	virtual void BuyTicket()
-	{
-		cout << "Person::买票-全价" << endl;
-	}
-
-	virtual void Func1()
-	{
-		cout << "Person::Func1()" << endl;
-	}
+	B(char *s1, char*s2) :A(s1) { cout << s2 << endl; }
 };
 
-class Student : public Person {
-public:
-	virtual void BuyTicket()
-	{
-		cout << "Student::买票-半价" << endl;
-	}
-
-	virtual void Func2()
-	{
-		cout << "Student::Func2()" << endl;
-	}
-};
-
-typedef void(*VFPTR)();    // 把一个 函数指针类型 命名为 VFPTR
-
-//void PrintVFTable(VFPTR table[])  // 同VFPTR* table
-// 
-//void PrintVFTable(VFPTR* table, size_t n)  
-// g++环境下，不会自动在虚表末尾加nullptr，所以必须指定访问函数的个数
-
-void PrintVFTable(VFPTR* table)
+class C :virtual public A
 {
-	for (size_t i = 0; table[i] != nullptr; ++i)
-		//for (size_t i = 0; i < n; ++i)  // g++环境
-	{
-		printf("vft[%d]:%p->", i, table[i]);
-		//table[i]();  // 同下
-		VFPTR pf = table[i];  // 遍历每个虚表中的函数
-		pf();  // 调用该函数
-	}
-	cout << endl;
-}
-
-class Base1 {
 public:
-	virtual void func1() { cout << "Base1::func1" << endl; }
-	virtual void func2() { cout << "Base1::func2" << endl; }
-private:
-	int b1 = 1;
+	C(char *s1, char*s2) :A(s1) { cout << s2 << endl; }
 };
 
-class Base2 {
-public:
-	virtual void func1() { cout << "Base2::func1" << endl; }
-	virtual void func2() { cout << "Base2::func2" << endl; }
-private:
-	int b2 = 2;
-};
-
-class Derive : public Base1, public Base2 {
-public:
-	virtual void func1() { cout << "Derive::func1" << endl; }
-	virtual void func3() { cout << "Derive::func3" << endl; }
-private:
-	int d = 3;
-};
-
-int main()
+class D :public B, public C
 {
-	// 同一个类型的对象共用一个虚表
-	Person p1;
-	Person p2;
+public:
+	D(char *s1, char *s2, char *s3, char *s4) :B(s1, s2), C(s1, s3), A(s1)
+	{
+		cout << s4 << endl;
+	}
+};
 
-	// vs下 不管是否完成重写，子类虚表跟父类虚表都不是同一个
-	Student s1;
-	Student s2;
+// A：class A class B class C class D      B：class D class B class C class A
 
-	/*PrintVFTable((VFPTR*)*(int*)&s1, 3);
-	PrintVFTable((VFPTR*)*(int*)&p1, 2);*/
+//C：class D class C class B class A      D：class A class C class B class D
 
-	Derive d;
-	//cout << sizeof(d) << endl;
+int main() {
+	D *p = new D("class A", "class B", "class C", "class D");
+	delete p;
 
-	//PrintVFTable((VFPTR*)(*(int*)&d));
-	////PrintVFTable((VFPTR*)(*(int*) ( (char*) &d+sizeof(Base1) ) ));
-
-	//Base2* ptr2 = &d;
-	//PrintVFTable((VFPTR*)(*(int*)(ptr2)));
-
-	// 符合多态，去指向对象虚函数表中去找func1的地址调用
-	Base1* ptr1 = &d;
-	ptr1->func1();
-
-	Base2* ptr2 = &d;
-	ptr2->func1();
-
-	//d.func1();
-
+	//B b;
+	
 	return 0;
 }
