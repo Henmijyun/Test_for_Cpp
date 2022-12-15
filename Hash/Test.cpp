@@ -115,6 +115,10 @@ int main()
 	//TestHT2();
 
 	//HashBucket::TestHT1();
+	//CloseHash::TestHash1();
+	//CloseHash::TestHash2();
+	//CloseHash::TestHash3();
 
+	HashBucket::TestHash1();
 	return 0;
 }
