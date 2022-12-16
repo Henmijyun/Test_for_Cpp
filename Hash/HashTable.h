@@ -347,6 +347,33 @@ namespace HashBucket
 
 			return nullptr;
 		}
+
+		bool Erase(const K& key)
+		{
+			if (_tables.size() == 0)
+			{
+				return false;
+			}
+
+			size_t hashi = key % _tables.size();
+			Node* prev = nullptr;
+			Node* cur = _tables[hashi];
+			while (cur)
+			{
+				if (cur->_kv.first == key)
+				{
+					// 1、头删
+
+					// 2、中间删
+					if (prev == nullptr)
+				}
+				else
+				{
+					prev = cur;
+					cur = cur->_next;
+				}
+			}
+		}
 	private:
 		vector<Node*> _tables;
 		size_t _size = 0;  // 存储的有效数据个数
