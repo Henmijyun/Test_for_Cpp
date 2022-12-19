@@ -856,46 +856,159 @@
 //}
 
 
-#include<iostream>
+//#include <iostream>
+//#include <map>
+//#include <set>
+//#include <string>
+//using namespace std;
+//class A{
+//public:
+//	A(char *s) { cout << s << endl; }
+//	~A(){}
+//};
+//
+//class B :virtual public A
+//{
+//public:
+//	B(char *s1, char*s2) :A(s1) { cout << s2 << endl; }
+//};
+//
+//class C :virtual public A
+//{
+//public:
+//	C(char *s1, char*s2) :A(s1) { cout << s2 << endl; }
+//};
+//
+//class D :public B, public C
+//{
+//public:
+//	D(char *s1, char *s2, char *s3, char *s4) :B(s1, s2), C(s1, s3), A(s1)
+//	{
+//		cout << s4 << endl;
+//	}
+//};
+//
+//// A：class A class B class C class D      B：class D class B class C class A
+//
+////C：class D class C class B class A      D：class A class C class B class D
+//
+//void test_map1()
+//{
+//	//map<string, string> dict;
+//	///*pair<string, string> kv1("sort", "排序");
+//	//dict.insert(kv1);*/
+//
+//	//dict.insert(pair<string, string>("sort", "排序"));
+//	//dict.insert(pair<string, string>("test", "测试"));
+//	//dict.insert(pair<string, string>("string", "字符串"));
+//
+//	//typedef pair<string, string> DictKV;
+//	//dict.insert(DictKV("string", "xxx"));
+//
+//	//dict.insert(make_pair("left", "左边"));
+//
+//	////map<string, string>::iterator it = dict.begin();
+//	//auto it = dict.begin();
+//	//while (it != dict.end())
+//	//{
+//	//	//cout << (*it).first << (*it).second <<endl;
+//	//	cout << it->first << it->second << endl;  // it->->first 这里编译器简化为一个->
+//	//	++it;
+//	//}
+//	//cout << endl;
+//
+//	//for (const auto& kv : dict)
+//	//{
+//	//	cout << kv.first << ":" << kv.second << endl;
+//	//}
+//	//cout << endl;
+//
+//	string arr[] = { "苹果", "西瓜", "苹果", "西瓜", 
+//		"苹果", "苹果", "西瓜", "苹果", "香蕉", "苹果", "香蕉" };
+//
+//	map<string, int> countMap;
+//	for (auto& str : arr)
+//	{
+//		// 1、str不在countMap中，插入pair(str, int()),然后在对返回次数++
+//		// 2、str在countMap中，返回value(次数)的引用，次数++;
+//		countMap[str]++;
+//	}
+//}
+//
+//
+//int main() {
+//	D *p = new D("class A", "class B", "class C", "class D");
+//	delete p;
+//
+//	//B b;
+//	
+//	return 0;
+//}
+
+
+#include <iostream>
+#include <vector>
+#include <string>
 using namespace std;
-class A{
-public:
-	A(char *s) { cout << s << endl; }
-	~A(){}
-};
-
-class B :virtual public A
+int main()
 {
-public:
-	B(char *s1, char*s2) :A(s1) { cout << s2 << endl; }
-};
+    int num = 0;
+    int max = 0;
+    cin >> num;
 
-class C :virtual public A
-{
-public:
-	C(char *s1, char*s2) :A(s1) { cout << s2 << endl; }
-};
+    vector<string> v;
+    while (num--)
+    {
+        string s;
+        cin >> s;
+        v.push_back(s);
+    }
+    vector<string>::iterator it1 = v.begin();
+    while (it1 != v.end())
+    {
+        vector<string>::iterator it2 = it1;
+        ++it2;
 
-class D :public B, public C
-{
-public:
-	D(char *s1, char *s2, char *s3, char *s4) :B(s1, s2), C(s1, s3), A(s1)
-	{
-		cout << s4 << endl;
-	}
-};
 
-// A：class A class B class C class D      B：class D class B class C class A
+        //while (it2 != v.end())
+        //{
+        //    int i, j = 0;
+        //    it1
+        //    while (it1[i] == it2[j])
+        //    {
+        //        int size = 0;
+        //        ++size;
+        //        ++i;
+        //        ++j;
+        //        if (size > max)
+        //        {
+        //            max = size;
+        //        }
+        //    }
+        //    ++j;
 
-//C：class D class C class B class A      D：class A class C class B class D
+        //    if (it2[j] == '\0')
+        //    {
+        //        ++i;
+        //        if (it1[i] == '\0')
+        //        {
+        //            break;
+        //        }
+        //        j = 0;
+        //    }
 
-int main() {
-	D *p = new D("class A", "class B", "class C", "class D");
-	delete p;
+        //}
+        cout << "it1:" << *it1 <<endl;
+        if (it2 == v.end())
+        {
+            break;
+        }
+        cout << "it2:" << *it2 << endl;
 
-	//B b;
-	
-	return 0;
+        ++it1;
+    }
+    //printf("%d\n", max);
+    return 0;
 }
 
  
