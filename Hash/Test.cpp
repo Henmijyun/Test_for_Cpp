@@ -103,7 +103,7 @@ void test_op()
 	cout << "unordered_set erase:" << end6 - begin6 << endl;
 
 	unordered_map<string, int> countMap;
-	countMap.insert(make_pair("ƻ", 1));
+	countMap.insert(make_pair("2", 1));
 }
 
 
@@ -119,6 +119,9 @@ int main()
 	//CloseHash::TestHash2();
 	//CloseHash::TestHash3();
 
-	HashBucket::TestHash1();
+	//HashBucket::TestHash1();
+	//HashBucket::TestHash2();
+	HashBucket::TestHash3();
+
 	return 0;
 }
