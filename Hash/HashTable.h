@@ -481,7 +481,7 @@ namespace HashBucket
 		size_t _size = 0;  // 存储的有效数据个数
 	};
 
-	void TestHash1()
+	/*void TestHash1()
 	{
 		int a[] = { 1, 11, 4, 15, 26, 7, 44, 25, 77, 35 };
 		HashTable<int, int> ht;
@@ -544,5 +544,5 @@ namespace HashBucket
 		cout << "最长的桶的长度:" << ht.MaxBucketLenth() << endl;
 		cout << "负载因子:" << (double)ht.Size() / (double)ht.TablesSize() << endl;
 
-	}
+	}*/
 }
