@@ -9,6 +9,7 @@
 #include <array>
 #include <assert.h>
 #include <algorithm>
+#include <functional>
 
 using namespace std;
 
@@ -664,6 +665,82 @@ class lambda_xxxx
 //}
 
 
+//template<class F, class T>
+//T useF(F f, T x)
+//{
+//	static int count = 0;
+//	cout << "count:" << ++count << endl;
+//	cout << "count:" << &count << endl;
+//	return f(x);
+//}
+//
+//double f(double i)
+//{
+//	return i / 2;
+//}
+//
+//struct Functor
+//{
+//	double operator()(double d)
+//	{
+//		return d / 3;
+//	}
+//};
+
+//
+
+
+
+
+//int f(int a, int b) // 函数
+//{
+//	return a + b;
+//}
+//
+//struct Functor
+//{
+//public:
+//	int operator() (int a, int b) // 仿函数
+//	{
+//		return a + b;
+//	}
+//};
+//
+//class Plus
+//{
+//public:
+//	static int plusi(int a, int b)  // 静态
+//	{
+//		return a + b;
+//	}
+//	double plusd(double a, double b)  // 非静态
+//	{
+//		return a + b;
+//	}
+//};
+//
+//int main()
+//{
+//	// 包装器
+//	// 传参的时候，传 返回值类型 和 参数包
+//
+//	function<int(int, int)> f1 = f;   // 绑定函数
+//	f1(1, 2);
+//
+//	function<int(int, int)> f2 = Functor();  // 绑定仿函数
+//	f2(1, 2);
+//
+//	function<int(int, int)> f3 = Plus::plusi;   // 绑定类中的，静态函数
+//	f3(1, 2);
+//
+//	function<double(Plus, double, double)> f4 = &Plus::plusd;   // 绑定类中的，非静态函数 （语法规定要加&）
+//	f4(Plus(), 1.1, 2.2);   // (成员函数要通过对象来调用，所以需要传对象)
+//	 
+//	return 0;
+//}
+
+
+
 template<class F, class T>
 T useF(F f, T x)
 {
@@ -685,18 +762,30 @@ struct Functor
 		return d / 3;
 	}
 };
-
 int main()
 {
+	// 编译器会分别实例化出三个函数
 	// 函数指针
 	cout << useF(f, 11.11) << endl;
-
 	// 函数对象
 	cout << useF(Functor(), 11.11) << endl;
-
 	// lamber表达式对象
 	cout << useF([](double d)->double{ return d / 4; }, 11.11) << endl;
 
+	cout << "-------------" << endl;
+	// 使用包装器，只实例化出一个
+	// 函数指针
+	function<double(double)> f1 = f;
+	cout << useF(f1, 11.11) << endl;
+
+	// 函数对象
+	function<double(double)> f2 = Functor();
+	cout << useF(f2, 11.11) << endl;
+
+	// lamber表达式对象
+	function<double(double)> f3 = [](double d)->double { return d / 4; };
+	cout << useF(f3, 11.11) << endl;
 
 	return 0;
 }
+
