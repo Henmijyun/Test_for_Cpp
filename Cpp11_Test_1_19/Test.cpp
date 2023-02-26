@@ -741,50 +741,118 @@ class lambda_xxxx
 
 
 
-template<class F, class T>
-T useF(F f, T x)
+//template<class F, class T>
+//T useF(F f, T x)
+//{
+//	static int count = 0;
+//	cout << "count:" << ++count << endl;
+//	cout << "count:" << &count << endl;
+//	return f(x);
+//}
+//
+//double f(double i)
+//{
+//	return i / 2;
+//}
+//
+//struct Functor
+//{
+//	double operator()(double d)
+//	{
+//		return d / 3;
+//	}
+//};
+//int main()
+//{
+//	// 编译器会分别实例化出三个函数
+//	// 函数指针
+//	cout << useF(f, 11.11) << endl;
+//	// 函数对象
+//	cout << useF(Functor(), 11.11) << endl;
+//	// lamber表达式对象
+//	cout << useF([](double d)->double{ return d / 4; }, 11.11) << endl;
+//
+//	cout << "-------------" << endl;
+//	// 使用包装器，只实例化出一个
+//	// 函数指针
+//	function<double(double)> f1 = f;
+//	cout << useF(f1, 11.11) << endl;
+//
+//	// 函数对象
+//	function<double(double)> f2 = Functor();
+//	cout << useF(f2, 11.11) << endl;
+//
+//	// lamber表达式对象
+//	function<double(double)> f3 = [](double d)->double { return d / 4; };
+//	cout << useF(f3, 11.11) << endl;
+//
+//	return 0;
+//}
+
+
+
+// bind 绑定
+
+int Div(int a, int b)
 {
-	static int count = 0;
-	cout << "count:" << ++count << endl;
-	cout << "count:" << &count << endl;
-	return f(x);
+	return a / b;
 }
 
-double f(double i)
+int Plus(int a, int b)
 {
-	return i / 2;
+	return a + b;
 }
 
-struct Functor
+int Mul(int a, int b, double rate)  // 三个参数
 {
-	double operator()(double d)
+	return a * b * rate;
+}
+
+class Sub
+{
+public:
+	int sub(int a, int b)  // 类中的函数
 	{
-		return d / 3;
+		return a - b;
 	}
 };
+
+using namespace placeholders;
+
+
 int main()
 {
-	// 编译器会分别实例化出三个函数
-	// 函数指针
-	cout << useF(f, 11.11) << endl;
-	// 函数对象
-	cout << useF(Functor(), 11.11) << endl;
-	// lamber表达式对象
-	cout << useF([](double d)->double{ return d / 4; }, 11.11) << endl;
+	// 调整个数, 绑定死固定参数
+	function<int(int, int)> funcPlus = Plus;
+	//function<int(Sub, int, int)> funcSub = &Sub::sub;
+	function<int(int, int)> funcSub = bind(&Sub::sub, Sub(), _1, _2); // 第一个参数Sub()是lambda的类，被绑定住
+	function<int(int, int)> funcMul = bind(Mul, _1, _2, 1.5);  // 第三个参数给固定值
+	map<string, function<int(int, int)>> opFuncMap =
+	{
+		{ "+", Plus},
+		{ "-", bind(&Sub::sub, Sub(), _1, _2)}
+	};
 
-	cout << "-------------" << endl;
-	// 使用包装器，只实例化出一个
-	// 函数指针
-	function<double(double)> f1 = f;
-	cout << useF(f1, 11.11) << endl;
+	cout << funcPlus(1, 2) << endl;
+	cout << funcSub(1, 2) << endl;  // 绑定调整后，类不需要传参
+	cout << funcMul(2, 2) << endl; // 绑定调整后只需要传参2个值
 
-	// 函数对象
-	function<double(double)> f2 = Functor();
-	cout << useF(f2, 11.11) << endl;
+	cout << opFuncMap["+"](1, 2) << endl;
+	cout << opFuncMap["-"](1, 2) << endl;
 
-	// lamber表达式对象
-	function<double(double)> f3 = [](double d)->double { return d / 4; };
-	cout << useF(f3, 11.11) << endl;
+
+
+	int x = 2, y = 10;
+	cout << Div(x, y) << endl;
+
+	// 调整顺序 -- 鸡肋
+	// _1 _2.... 定义在placeholders命名空间中，代表绑定函数对象的形参，
+	// _1，_2...分别代表第一个形参、第二个形参...
+	//bind(Div, placeholders::_1, placeholders::_2); // 不放开命名空间的话
+	auto bindFunc1 = bind(Div, _1, _2);
+	function<int(int, int)> bindFunc2 = bind(Div, _2, _1);
+	cout << bindFunc1(x, y) << endl;
+	cout << bindFunc2(x, y) << endl;
 
 	return 0;
 }
