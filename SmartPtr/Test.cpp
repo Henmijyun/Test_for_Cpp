@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 
 using namespace std;
 
@@ -135,5 +135,31 @@ int main()
 	// 拷贝问题：
 	//SmartPtr<A> sp2(sp1);  // err 浅拷贝，指针指向同一块空间
 
+	return 0;
+}
+
+*/
+
+
+
+// 智能指针
+#include <iostream>
+#include <string>
+#include <memory>
+
+
+using namespace std;
+
+#include "SmartPtr.h"
+
+int main()
+{
+	// test_auto_ptr();
+	
+	// test_unique_ptr();
+	
+	test_shared_ptr();
+	
+	
 	return 0;
 }
