@@ -156,49 +156,115 @@ namespace skk
 	};
 
 
-	// 简化模拟shared_ptr :利用引用计数
+
+
+	// 简化模拟shared_ptr :利用静态变量，引用计数（不可行） 
+	//template<class T>
+	//class shared_ptr
+	//{
+	//public:
+	//	shared_ptr(T* ptr = nullptr)
+	//		: _ptr(ptr)
+	//	{
+	//		++_count;
+	//	}
+
+	//	~shared_ptr()
+	//	{
+	//		if (--_count == 0 && _ptr)
+	//		{
+	//			cout << "Delete:" << _ptr << " count:" << &_count << endl;
+	//			delete _ptr;
+	//		}
+	//	}
+
+	//	shared_ptr(shared_ptr<T>& sp)
+	//		: _ptr(sp._ptr)
+	//	{
+	//		++_count;
+	//	}
+
+	//	T& operator*()
+	//	{
+	//		return *_ptr;
+	//	}
+
+	//	T* operator->()
+	//	{
+	//		return _ptr;
+	//	}
+
+	//private:
+	//	T* _ptr;
+	//	static int _count;  // 用静态变量的方式不可行
+	//};
+	// 静态变量（不可行）
+	//template<class T>
+	//int shared_ptr<T>::_count = 0;
+
+
+
+
+
+	// 简化模拟shared_ptr :利用指针，引用计数 
 	template<class T>
 	class shared_ptr
 	{
 	public:
 		shared_ptr(T* ptr = nullptr)
 			: _ptr(ptr)
+			, _pCount(new int(1))
 		{}
 
+		// sp1(sp2)
 		shared_ptr(shared_ptr<T>& sp)
 			:_ptr(sp._ptr)
+			, _pCount(sp._pCount)
 		{
-			++_count;   // 每次计数++
+			(*_pCount)++;
 		}
 
-		// ap1 = ap2
-		shared_ptr<T>& operator=(shared_ptr<T>& ap)
+		void Release()
 		{
-			if (this != &ap)
+			if (--(*_pCount) == 0)
 			{
-				if (_ptr)
-				{
-					cout << "Delete:" << _ptr << endl;
-					delete _ptr;
-				}
-
-				// 管理权转移
-				_ptr = ap._ptr;
-				ap._ptr = nullptr;
+				cout << "Delete:" << _ptr << " count:" << _pCount << endl;
+				delete _ptr;
+				delete _pCount;
 			}
-			return *this;
 		}
 
 		~shared_ptr()
 		{
-			if (--_count == 0 && _ptr)
-			{
-				cout << "Delete:" << _ptr << endl;
-				delete _ptr;
-			}
+			Release();
 		}
 
+		// sp1 = sp5
+		// sp1 = sp1 
+		shared_ptr<T>& operator=(const shared_ptr<T>& sp)
+		{
+			//if (this == &sp)  // err 可能有地址不相同，但是指向同一块空间
+			if (sp._ptr == _ptr)
+			{
+				return *this;
+			}
 
+			// 减减被赋值对象的计数，如果是最后一个对象，要释放
+			/*if (--(*_pCount) == 0)
+			{
+				cout << "Delete:" << _ptr << " count:" << _pCount << endl;
+				delete _ptr;
+				delete _pCount;
+			}*/
+			Release();
+
+			// 共管新资源，++计数
+			_ptr = sp._ptr;
+			_pCount = sp._pCount;
+			(*_pCount)++;
+
+			return *this;
+		}
 
 		T& operator*()
 		{
@@ -212,12 +278,12 @@ namespace skk
 
 	private:
 		T* _ptr;
-
-		static int _count;  // 引用计数
+		int* _pCount;  // 每次构造时，new一个计数
+		// 多线程中，可能存在隐患
 	};
-	// 静态变量
-	template<class T>
-	int shared_ptr<T>::_count = 0;
+
+
+
 
 }
 
@@ -263,11 +329,18 @@ void test_unique_ptr()
 }
 
 // shared_ptr :利用引用计数
-void test_shared_ptr()
+void test_shared_ptr1()
 {
 	skk::shared_ptr<A> sp1(new A);
 	skk::shared_ptr<A> sp2(sp1);
 	skk::shared_ptr<A> sp3(sp2);
+
+	//skk::shared_ptr<int> sp4(new int);  // err 静态变量的方式
+	//skk::shared_ptr<int> sp5(sp4);    // 会让 A类型的对象 和 int类型的对象 用同一个count进行计数
+
+	skk::shared_ptr<int> sp4(new int);  // ok 指针计数
+	skk::shared_ptr<A> sp5(new A);   
+	skk::shared_ptr<A> sp6(sp5);
 
 	sp1->_a1++;
 	sp1->_a2++;  // 1 1
@@ -276,4 +349,52 @@ void test_shared_ptr()
 	sp2->_a1++;
 	sp2->_a2++;   // 2 2
 	cout << sp2->_a1 << ":" << sp2->_a2 << endl;
+
+	sp1 = sp5;
+	sp2 = sp5;
+	sp3 = sp5;
+
+	// 自己给自己赋值
+	skk::shared_ptr<int> sp7(new int);
+	sp7 = sp7;  // 减减_pCount变0，自杀了
+	sp1 = sp5;  // 地址不相同，但是指向同一块空间
+}
+
+
+struct Node
+{
+	int _val;
+	/*std::shared_ptr<Node> _next;
+	std::shared_ptr<Node> _prev;*/
+
+	std::weak_ptr<Node> _next;
+	std::weak_ptr<Node> _prev;
+
+	~Node()
+	{
+		cout << "~Node" << endl;
+	}
+};
+
+// 循环引用 -- weak_ptr不是常规智能指针，没有RAII，不支持直接管理资源
+// weak_ptr主要用shared_ptr构造，用来解决shared_ptr循环引用问题
+void test_shared_ptr2()
+{
+	/*std::shared_ptr<Node> n1(new Node);
+	std::shared_ptr<Node> n2(new Node);
+
+	n1->_next = n2;
+	n2->_prev = n1;*/
+
+	std::shared_ptr<Node> n1(new Node);
+	std::shared_ptr<Node> n2(new Node);
+
+	cout << n1.use_count() << endl;
+	cout << n2.use_count() << endl;
+
+	n1->_next = n2;
+	n2->_prev = n1;
+
+	cout << n1.use_count() << endl;
+	cout << n2.use_count() << endl;
 }

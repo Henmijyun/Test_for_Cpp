@@ -158,7 +158,9 @@ int main()
 	
 	// test_unique_ptr();
 	
-	test_shared_ptr();
+	// test_shared_ptr1();
+
+	test_shared_ptr2();
 	
 	
 	return 0;
