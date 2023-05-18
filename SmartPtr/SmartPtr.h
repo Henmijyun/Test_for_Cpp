@@ -203,11 +203,18 @@ namespace skk
 	//int shared_ptr<T>::_count = 0;
 
 
-
-
+	// 默认删除器
+	template<class T>
+	struct Delete
+	{
+		void operator()(T* ptr)
+		{
+			delete ptr;
+		}
+	};
 
 	// 简化模拟shared_ptr :利用指针，引用计数 
-	template<class T>
+	template<class T, class D = Delete<T>>
 	class shared_ptr
 	{
 	public:
@@ -224,12 +231,23 @@ namespace skk
 			(*_pCount)++;
 		}
 
+		//// 支持定制删除器的构造
+		//template<class D>
+		//shared_ptr(T* ptr = nullptr, D del)
+		//	:_ptr(ptr)
+		//	,_pCount(new int(1))
+		//{}
+
 		void Release()
 		{
 			if (--(*_pCount) == 0)
 			{
-				cout << "Delete:" << _ptr << " count:" << _pCount << endl;
-				delete _ptr;
+				// cout << "Delete:" << _ptr << " count:" << _pCount << endl;
+				// delete _ptr;
+				
+				//D del;
+				//del(_ptr);
+				D()(_ptr);
 				delete _pCount;
 			}
 		}
@@ -261,6 +279,7 @@ namespace skk
 			// 共管新资源，++计数
 			_ptr = sp._ptr;
 			_pCount = sp._pCount;
+
 			(*_pCount)++;
 
 			return *this;
@@ -276,13 +295,60 @@ namespace skk
 			return _ptr;
 		}
 
+		int use_count()
+		{
+			return *_pCount;
+		}
+
+		T* get() const
+		{
+			return _ptr;
+		}
+
 	private:
 		T* _ptr;
-		int* _pCount;  // 每次构造时，new一个计数
+		int* _pCount;  // 每次构造时，new一个计数 (引用计数)
 		// 多线程中，可能存在隐患
 	};
 
 
+	// 辅助型智能指针，为了配合解决shared_ptr循环引用问题
+	template<class T>
+	class weak_ptr
+	{
+	public:
+		weak_ptr()
+			:_ptr(nullptr)
+		{}
+
+		weak_ptr(const shared_ptr<T>& sp)  // 用shared_ptr构造
+			:_ptr(sp.get())
+		{}
+
+		weak_ptr(const weak_ptr<T>& wp)   // 拷贝构造
+			:_ptr(wp._ptr)
+		{}
+
+		weak_ptr<T>& operator=(const shared_ptr<T>& sp)
+		{
+			_ptr = sp.get();
+			return *this;
+		}
+
+		T& operator*()
+		{
+			return *_ptr;
+		}
+
+		T* operator->()
+		{
+			return _ptr;
+		}
+
+	public:
+		T* _ptr;
+
+	};
 
 
 }
@@ -360,15 +426,55 @@ void test_shared_ptr1()
 	sp1 = sp5;  // 地址不相同，但是指向同一块空间
 }
 
+////////////////////////////////////////////////////////////
+//// 循环引用
+//struct Node
+//{
+//	int _val;
+//	/*std::shared_ptr<Node> _next;
+//	std::shared_ptr<Node> _prev;*/
+//
+//	std::weak_ptr<Node> _next;
+//	std::weak_ptr<Node> _prev;
+//
+//	~Node()
+//	{
+//		cout << "~Node" << endl;
+//	}
+//};
+//
+//// 循环引用 -- weak_ptr不是常规智能指针，没有RAII，不支持直接管理资源
+//// weak_ptr主要用shared_ptr构造，用来解决shared_ptr循环引用问题
+//void test_shared_ptr2()
+//{
+//	/*std::shared_ptr<Node> n1(new Node);
+//	std::shared_ptr<Node> n2(new Node);
+//
+//	n1->_next = n2;
+//	n2->_prev = n1;*/
+//
+//	std::shared_ptr<Node> n1(new Node);
+//	std::shared_ptr<Node> n2(new Node);
+//
+//	cout << n1.use_count() << endl;
+//	cout << n2.use_count() << endl;
+//
+//	n1->_next = n2;
+//	n2->_prev = n1;
+//
+//	cout << n1.use_count() << endl;
+//	cout << n2.use_count() << endl;
+//}
 
+// 循环引用
 struct Node
 {
 	int _val;
-	/*std::shared_ptr<Node> _next;
-	std::shared_ptr<Node> _prev;*/
+	// skk::shared_ptr<Node> _next;
+	// skk::shared_ptr<Node> _prev;
 
-	std::weak_ptr<Node> _next;
-	std::weak_ptr<Node> _prev;
+	skk::weak_ptr<Node> _next;
+	skk::weak_ptr<Node> _prev;
 
 	~Node()
 	{
@@ -380,14 +486,8 @@ struct Node
 // weak_ptr主要用shared_ptr构造，用来解决shared_ptr循环引用问题
 void test_shared_ptr2()
 {
-	/*std::shared_ptr<Node> n1(new Node);
-	std::shared_ptr<Node> n2(new Node);
-
-	n1->_next = n2;
-	n2->_prev = n1;*/
-
-	std::shared_ptr<Node> n1(new Node);
-	std::shared_ptr<Node> n2(new Node);
+	skk::shared_ptr<Node> n1(new Node);
+	skk::shared_ptr<Node> n2(new Node);
 
 	cout << n1.use_count() << endl;
 	cout << n2.use_count() << endl;
@@ -398,3 +498,77 @@ void test_shared_ptr2()
 	cout << n1.use_count() << endl;
 	cout << n2.use_count() << endl;
 }
+
+
+// 定制删除器
+
+template<class T>
+struct DeleteArray
+{
+	void operator()(T* ptr)
+	{
+		cout << "delete[]" << ptr << endl;
+		delete[] ptr;
+	}
+};
+
+
+template<class T>
+struct Free
+{
+	void operator()(T* ptr)
+	{
+		cout << "free" << ptr << endl;
+		free(ptr);
+	}
+};
+
+// 定制删除器的使用
+void test_shared_ptr3()
+{
+	// 使用仿函数对象
+	std::shared_ptr<Node> n1(new Node[5], DeleteArray<Node>());  // 传仿函数对象
+	std::shared_ptr<Node> n2(new Node);
+
+	std::shared_ptr<int> n3(new int);
+
+	std::shared_ptr<int> n4(new int[5], DeleteArray<int>());
+
+	std::shared_ptr<int> n5((int*)malloc(sizeof(12)), Free<int>());
+	// 因为传参时，传的是对象，可以使用仿函数的匿名对象
+	
+
+	// 使用lambda （推荐）
+	std::shared_ptr<Node> n6(new Node[5], 
+		[](Node* ptr)->void {delete[] ptr; });  // 传lambda
+
+	std::shared_ptr<int> n7(new int[5], 
+		[](int* ptr)->void {delete[] ptr; });
+
+	std::shared_ptr<int> n8((int*)malloc(sizeof(12)), 
+		[](int* ptr)->void {free(ptr); });
+	
+	std::shared_ptr<FILE> n9(fopen("test.txt", "w"),
+		[](FILE* ptr)->void {fclose(ptr); });   // 文件流也可以用
+
+	// unique_ptr的定制删除器，需要在模板参数中传入
+	std::unique_ptr<Node, DeleteArray<Node>> up(new Node[5]);
+
+}
+
+// 支持定制删除器的shared_ptr
+void test_shared_ptr4()
+{
+	skk::shared_ptr<Node, DeleteArray<Node>> n1(new Node[5]);
+	skk::shared_ptr<Node> n2(new Node);
+
+	skk::shared_ptr<int> n3(new int);
+
+	skk::shared_ptr<int, DeleteArray<int>> n4(new int[5]);
+
+	skk::shared_ptr<int, Free<int>> n5((int*)malloc(sizeof(12)));
+
+}
+
+
+
