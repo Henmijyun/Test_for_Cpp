@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>      // std::ifstream
+#include <sstream>
 
 using namespace std;
 
@@ -367,6 +368,119 @@ using namespace std;
 
 
 
+//class Date
+//{
+//	friend ostream& operator << (ostream& out, const Date& d);
+//	friend istream& operator >> (istream& in, Date& d);
+//public:
+//	Date(int year = 1, int month = 1, int day = 1)
+//		:_year(year)
+//		, _month(month)
+//		, _day(day)
+//	{}
+//
+//	operator bool()
+//	{
+//		// 这里是随意写的，假设输入_year为0，则结束
+//		if (_year == 0)
+//			return false;
+//		else
+//			return true;
+//	}
+//private:
+//	int _year;
+//	int _month;
+//	int _day;
+//};
+//
+//istream& operator >> (istream& in, Date& d)
+//{
+//	in >> d._year >> d._month >> d._day;
+//	return in;
+//}
+//
+//ostream& operator << (ostream& out, const Date& d)
+//{
+//	out << d._year << " " << d._month << " " << d._day;
+//	return out;
+//}
+
+
+//int main()
+//{
+//	ifstream ifs("Test.cpp");
+//	char ch = ifs.get();
+//	while (ifs)    // 隐式类型转换bool，基类ios实现的，fstream继承
+//	{
+//		cout << ch;
+//		ch = ifs.get();
+//	}
+//
+//	// 析构函数会自动close
+//
+//	return 0;
+//}
+
+//int main()
+//{
+//	ifstream ifs("test.txt");
+//	// fscanf("%d%s%f", )
+//
+//	int i;
+//	string s;
+//	double d;
+//	Date de;
+//	ifs >> i >> s >> d >> de;
+//
+//	return 0;
+//}
+
+
+class A
+{
+public:
+	//explicit A(int a)
+	A(int a)
+		:_a(a)
+	{}
+
+	explicit operator int()  // 加explicit无法隐式类型转换
+	{
+		return _a;
+	}
+
+private:
+	int _a;
+};
+
+
+//int main()
+//{
+//	// 内置类型 转换成自定义类型
+//	A aa1 = 1; // 隐式类型转换 用1构造A临时对象，再拷贝构造aa1，优化后直接1构造aa1
+//	const A& aa2 = 1;  // 如果要引用&，必须+const
+//	A&& aa3 = 1;      // 或者右值引用
+//
+//	// 自定义类型 转换成内置类型
+//	// int i = aa1; // err 加explicit无法隐式类型转换
+//	int i1 = (int)aa1;
+//	int i2 = static_cast<int>(aa1);
+//
+//	return 0;
+//}
+
+
+
+
+// 二进制读写：在内存中如何存储，就如何写到磁盘文件
+// 优点：快   
+// 缺点：写出去的内容看不见
+// 
+// 文本读写：对象数据序列化字符串写出来，读回来也是字符串，反序列化转成对象数据 
+// 优点：可以看见写出去是什么   
+// 缺点：存在一个转换的过程，慢一些
+
+
 class Date
 {
 	friend ostream& operator << (ostream& out, const Date& d);
@@ -405,31 +519,168 @@ ostream& operator << (ostream& out, const Date& d)
 }
 
 
+struct ServerInfo
+{
+	// char _address[32];
+	string _address;  // 二进制读写时，不能用string，会有野指针问题
+
+	int _port;   // 100
+	
+	Date _date;
+};
+
+class ConfigManager
+{
+public:
+	ConfigManager(const char* filename = "server.config")
+		:_filename(filename)
+	{}
+
+	// 二进制写 
+	void WriteBin(const ServerInfo& info)
+	{
+		ofstream ofs(_filename, ios_base::out | ios_base::binary);
+		ofs.write((char*)&info, sizeof(info));
+	}
+	
+	// 二进制读
+	void ReadBin(ServerInfo& info)
+	{
+		ifstream ifs(_filename, ios_base::in | ios_base::binary);
+		ifs.read((char*)&info, sizeof(info));
+	}
+	
+	/*
+	// 文本写 
+	void WriteText(const ServerInfo& info)
+	{
+		ofstream ofs(_filename, ios_base::out);
+		ofs.write(info._address.c_str(), info._address.size());
+		// 加分割，方便读
+		ofs.put('\n');
+		const string str = to_string(info._port);   // 转string
+		ofs.write(str.c_str(), str.size());
+	}
+
+	// 文本读
+	void ReadText(ServerInfo& info)
+	{
+		ifstream ifs(_filename, ios_base::in);
+		char buffer[128];
+		ifs.getline(buffer, sizeof(buffer));  // 按行读取（因为写的时候加了'\n'）
+		info._address = buffer;
+
+		ifs.getline(buffer, sizeof(buffer)); 
+		info._port = stoi(buffer);   // string转int
+	}
+	*/
+
+	// 文本写 
+	void WriteText(const ServerInfo& info)
+	{
+		ofstream ofs(_filename, ios_base::out);
+		ofs << info._address << endl;
+		ofs << info._port << endl;
+		ofs << info._date << endl;
+	}
+
+	// 文本读
+	void ReadText(ServerInfo& info)
+	{
+		ifstream ifs(_filename, ios_base::in | ios_base::binary);
+		ifs >> info._address >> info._port >> info._date;
+	}
+
+private:
+	string _filename;  // 配置文件
+};
+
 //int main()
 //{
-//	ifstream ifs("Test.cpp");
-//	char ch = ifs.get();
-//	while (ifs)    // 隐式类型转换bool，基类ios实现的，fstream继承
-//	{
-//		cout << ch;
-//		ch = ifs.get();
-//	}
+//	// 内存二进制 写到文件
+//	// ServerInfo winfo = { "127.0.0.1", 8080 };   // 写入内容
+//	//ServerInfo winfo = { "https://legacy.cplusplus.com/", 8080 };   // 写入内容
+//	//ConfigManager cm1;
+//	//cm1.WriteBin(winfo);
 //
-//	// 析构函数会自动close
+//	// 从文件二进制 读出到内存
+//	//ServerInfo rinfo;      // 用于接收内容
+//	//ConfigManager cm2;
+//	//cm2.ReadBin(rinfo);
+//	//cout << rinfo._address << endl;
+//	//cout << rinfo._port << endl;
+//
+//	// 文本读写，可以使用string
+//	// 文本写（string）
+//	//ServerInfo winfo = { "https://legacy.cplusplus.com/", 8080 };   // 写入内容
+//	//ConfigManager cm3;
+//	//cm3.WriteText(winfo);
+//
+//	// 文本读（string）不够好用
+//	//ServerInfo rinfo;      // 用于接收内容
+//	//ConfigManager cm4;
+//	//cm4.ReadText(rinfo);
+//	//cout << rinfo._address << endl;
+//	//cout << rinfo._port << endl;
+//
+//	
+//	// 文本写（operator<<）
+//	//ServerInfo winfo = { "https://legacy.cplusplus.com/", 
+//	//	8080, { 2011, 12, 12 }};   // 写入内容
+//	//ConfigManager cm3;
+//	//cm3.WriteText(winfo);
+//
+//	// 文本读（operator>>）
+//	ServerInfo rinfo;      // 用于接收内容
+//	ConfigManager cm4;
+//	cm4.ReadText(rinfo);
+//	cout << rinfo._address << endl;
+//	cout << rinfo._port << endl;
+//	cout << rinfo._date << endl;
 //
 //	return 0;
 //}
 
+
+
+
+struct ChatInfo
+{
+	string _name; // 名字
+	int _id;      // id
+	Date _date;   // 时间
+	string _msg;  // 聊天信息
+};
+
 int main()
 {
-	ifstream ifs("test.txt");
-	// fscanf("%d%s%f", )
+	// 序列化
+	ChatInfo winfo = { "张三", 123, {2022, 12, 12}, "你好" };
+	ostringstream oss;
+	// stringstream oss;   // 读写同时支持，但不够好用
+	oss << winfo._name << endl;
+	oss << winfo._id << endl;
+	oss << winfo._date << endl;
+	oss << winfo._msg << endl;
 
-	int i;
-	string s;
-	double d;
-	Date de;
-	ifs >> i >> s >> d >> de;
+	string str = oss.str();
+	cout << str << endl;
+
+	// 网络传输str 另一端接收到了字符串信息数据
+
+	// 反序列化
+	ChatInfo rInfo;
+	istringstream iss(str);
+	// stringstream iss(str);  // 读写同时支持，但不够好用
+	iss >> rInfo._name;
+	iss >> rInfo._id;
+	iss >> rInfo._date;
+	iss >> rInfo._msg;
+
+	cout << "----------------------------------" << endl;
+	cout << rInfo._date << endl;
+	cout << rInfo._name << "[" << rInfo._id << "]:>" << rInfo._msg << endl;
+	cout << "----------------------------------" << endl;
 
 	return 0;
 }
