@@ -315,62 +315,270 @@ using namespace std;
 
 
 
-// 条件变量
+//// 条件变量
+//int main()
+//{
+//	int i = 0;
+//	int n = 100;
+//	mutex mtx;
+//	condition_variable cv;
+//	bool ready = false;
+//
+//	// 打印奇数
+//	thread t1([&]() ->void {
+//		while (i < n)
+//		{
+//			unique_lock<mutex> lock(mtx);
+//			cv.wait(lock, [&ready]() {return !ready; });  // 仿函数返回值为false，会阻塞等待，一直锁住
+//
+//			std::cout << "t1--" << this_thread::get_id() << ":" << i << std::endl;
+//			i += 1;
+//
+//			ready = true;
+//
+//			cv.notify_one();  // 唤醒，因为ready变为true，所以唤醒的是t2
+//		}
+//		});
+//
+//	// 打印偶数
+//	thread t2([&]() ->void {
+//		while (i < n)
+//		{
+//			unique_lock<mutex> lock(mtx);
+//			cv.wait(lock, [&ready]() {return ready; }); // 仿函数返回值为true，不会阻塞等待，则不会锁住
+//
+//			std::cout << "t2--" << this_thread::get_id() << ":" << i << std::endl;
+//			i += 1;
+//
+//			ready = false;
+//
+//			cv.notify_one();  // 唤醒，因为ready变为false，所以唤醒的是t1
+//
+//		}
+//		});
+//
+//	std::cout << "t1:" << t1.get_id() << std::endl;
+//	std::cout << "t2:" << t2.get_id() << std::endl;
+//
+//	t1.join();
+//	t2.join();
+//
+//
+//
+//
+//	return 0;
+//}
+
+
+
+//#include<memory>
+//
+//namespace skk
+//{
+//	template<class T>
+//	class shared_ptr
+//	{
+//	public:
+//		shared_ptr(T* ptr = nullptr)
+//			:_ptr(ptr)
+//			, _pRefCount(new int(1))
+//			, _pMutex(new mutex)
+//		{}
+//
+//		shared_ptr(const shared_ptr<T>& sp)
+//			:_ptr(sp._ptr)
+//			, _pRefCount(sp._pRefCount)
+//			, _pMutex(sp._pMutex)
+//		{
+//			AddRef();
+//		}
+//
+//		void Release()
+//		{
+//			bool flag = false;
+//
+//			_pMutex->lock();
+//			if (--(*_pRefCount) == 0 && _ptr)
+//			{
+//				cout << "delete:" << _ptr << endl;
+//				delete _ptr;
+//				delete _pRefCount;
+//
+//				flag = true;
+//			}
+//			_pMutex->unlock();
+//
+//			if (flag)
+//				delete _pMutex;
+//		}
+//
+//		void AddRef()
+//		{
+//			_pMutex->lock();
+//
+//			++(*_pRefCount);
+//
+//			_pMutex->unlock();
+//		}
+//
+//		shared_ptr<T>& operator=(const shared_ptr<T>& sp)
+//		{
+//			if (_ptr != sp._ptr)
+//			{
+//				Release();
+//
+//				_ptr = sp._ptr;
+//				_pRefCount = sp._pRefCount;
+//				_pmtx = sp._pmtx;
+//				AddRef();
+//			}
+//
+//			return *this;
+//		}
+//
+//		int use_count()
+//		{
+//			return *_pRefCount;
+//		}
+//
+//		~shared_ptr()
+//		{
+//			Release();
+//		}
+//
+//		// 像指针一样使用
+//		T& operator*()
+//		{
+//			return *_ptr;
+//		}
+//
+//		T* operator->()
+//		{
+//			return _ptr;
+//		}
+//
+//		T* get() const
+//		{
+//			return _ptr;
+//		}
+//	private:
+//		T* _ptr;
+//		int* _pRefCount;
+//		mutex* _pMutex;
+//	};
+//}
+//
+//int main()
+//{
+//	// shared_ptr是线程安全的吗？
+//	std::shared_ptr<double> sp1(new double(1.11));
+//	std::shared_ptr<double> sp2(sp1);
+//
+//	mutex mtx;
+//
+//	vector<thread> v(2);
+//	int n = 100000;
+//	for (auto& t : v)
+//	{
+//		t = thread([&](){
+//			for (size_t i = 0; i < n; ++i)
+//			{
+//				// 拷贝是线程安全的
+//				// skk::shared_ptr<double> sp(sp1);
+//				std::shared_ptr<double> sp(sp1);
+//
+//				// 访问资源不是
+//				mtx.lock();
+//				(*sp)++;
+//				mtx.unlock();
+//			}
+//		});
+//	}
+//
+//	for (auto& t : v)
+//	{
+//		t.join();
+//	}
+//
+//	cout << sp1.use_count() << endl;
+//	cout << *sp1 << endl;
+//
+//	return 0;
+//}
+
+
+
+//class Singleton
+//{
+//public:
+//	static Singleton* GetInstance()
+//	{
+//		// 保护第一次，后续不需要加锁
+//		// 双检查加锁
+//		if (_pInstance == nullptr)
+//		{
+//			unique_lock<mutex> lock(_mtx);
+//			if (_pInstance == nullptr)
+//			{
+//				_pInstance = new Singleton;
+//			}
+//		}
+//
+//		return _pInstance;
+//	}
+//
+//private:
+//	// 构造函数私有
+//	Singleton(){};
+//
+//	// C++11
+//	Singleton(Singleton const&) = delete;
+//	Singleton& operator=(Singleton const&) = delete;
+//
+//	static Singleton* _pInstance;
+//	static mutex _mtx;
+//};
+//
+//Singleton* Singleton::_pInstance = nullptr;
+//mutex Singleton::_mtx; 
+//
+//int main()
+//{
+//	Singleton::GetInstance();
+//	Singleton::GetInstance();
+//
+//	return 0;
+//}
+
+class Singleton
+{
+public:
+	static Singleton* GetInstance()
+	{
+		// 局部的静态对象，第一次调用时初始化
+
+		// 在C++11之前是不能保证线程安全的
+		// C++11之前局部静态对象的构造函数调用初始化并不能保证线程安全的原子性。
+		// C++11的时候修复了这个问题，所以这种写法，只能在支持C++11以后的编译器上玩
+		static Singleton _s;
+
+		return &_s;
+	}
+
+private:
+	// 构造函数私有
+	Singleton() {};
+
+	// C++11
+	Singleton(Singleton const&) = delete;
+	Singleton& operator=(Singleton const&) = delete;
+};
+
 int main()
 {
-	int i = 0;
-	int n = 100;
-	mutex mtx;
-	condition_variable cv;
-	bool ready = false;
-
-	// 打印奇数
-	thread t1([&]() ->void {
-		while (i < n)
-		{
-			unique_lock<mutex> lock(mtx);
-			cv.wait(lock, [&ready]() {return !ready; });  // 仿函数返回值为false，会阻塞等待，一直锁住
-
-			std::cout << this_thread::get_id() << ":" << i << std::endl;
-			i += 1;
-
-			ready = true;
-
-			cv.notify_one();  // 唤醒，因为ready变为true，所以唤醒的是t2
-		}
-		});
-
-	// 打印偶数
-	thread t2([&]() ->void {
-		while (i < n)
-		{
-			unique_lock<mutex> lock(mtx);
-			cv.wait(lock, [&ready]() {return ready; }); // 仿函数返回值为true，不会阻塞等待，则不会锁住
-
-			std::cout << this_thread::get_id() << ":" << i << std::endl;
-			i += 1;
-
-			ready = false;
-
-			cv.notify_one();  // 唤醒，因为ready变为false，所以唤醒的是t1
-
-		}
-		});
-
-	std::cout << "t1:" << t1.get_id() << std::endl;
-	std::cout << "t2:" << t2.get_id() << std::endl;
-
-	t1.join();
-	t2.join();
-
-
-
+	Singleton::GetInstance();
+	Singleton::GetInstance();
 
 	return 0;
 }
-
-
-
-
-
 
